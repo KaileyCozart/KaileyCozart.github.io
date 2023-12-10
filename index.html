@@ -226,7 +226,7 @@
                 // We Now Unpack Loaded Data
 
                 ////  Bubble Chart  //////////////////////////////////////////////////////////////////
-                var bubbleChartData  = d3.csvParseRows(data[3])
+                var bubbleChartData  = data[3]
 
                 ////  Line Chart  //////////////////////////////////////////////////////////////////
                 var lineChartData = data[0]
@@ -248,6 +248,8 @@
             var diameter = 960,
                 format = d3.format(",d"),
                 color = d3.scale.category20c();
+                
+                var color = ["#993404", "#fe9929", "grey"]
             function createBubbleChart(bubbleChartData) {
 
                 var bubble = d3.layout.pack()
