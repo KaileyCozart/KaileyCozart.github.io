@@ -246,13 +246,12 @@
 
             ////  Bubble Chart  //////////////////////////////////////////////////////////////////
             var diameter = 960,
-                format = d3.format(",d"),
-                color = d3.scale.category20c();
+                format = d3.format(",d")
                 
                 var color = ["#993404", "#fe9929", "grey"]
             function createBubbleChart(bubbleChartData) {
 
-                var bubble = d3.layout.pack()
+                var bubble = d3.pack()
                 //  .sort(null)
                 //  .sort(d3.ascending)
                 //  .sort(d3.descending)
