@@ -14,6 +14,15 @@
         
         <!-- CSS -->
         <style>
+            /* Encompassing CSS */
+            body, svg {
+                background-color: #212121;
+            }
+
+            #master-content-div {
+                width: 1099px;
+                margin: auto;
+            }
 
             /* Hero Div Component */
             body {
@@ -133,9 +142,11 @@
         <div class="heroDiv">
             <h1 class="fancyText">&lt;Kailey's Portfolio /&gt;</h1>
         </div>
-        <div id="line-chart" class="container"></div>
-        <div id="bar-chart" class="container"></div>
-        <div id="table" class="container"></div>
+        <div id="master-content-div">
+            <div id="line-chart" class="container"></div>
+            <div id="bar-chart" class="container"></div>
+            <div id="table" class="container"></div>   
+        </div>
 
         <!-- D3 Code -->
         <script>
