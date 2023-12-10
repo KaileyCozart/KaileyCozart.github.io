@@ -1,52 +1,7 @@
-region,value,song_feature
-generic,300,Digital Forensics
-generic,500,Data Analytics
-generic,500,Calculus I-III
-Africa / Middle East,0.1005,acousticness
-Asia / Australia,0.1068,acousticness
-Eastern Europe,0.1101,acousticness
-North America,0.1183,acousticness
-South America,0.0979,acousticness
-Western Europe,0.1117,acousticness
-Africa / Middle East,0.1033,danceability
-Asia / Australia,0.1054,danceability
-Eastern Europe,0.0983,danceability
-North America,0.1046,danceability
-South America,0.091,danceability
-Western Europe,0.0997,danceability
-Africa / Middle East,0.0977,energy
-Asia / Australia,0.1132,energy
-Eastern Europe,0.1008,energy
-North America,0.1238,energy
-South America,0.0951,energy
-Western Europe,0.0992,energy
-Africa / Middle East,0.0633,instrumentalness
-Asia / Australia,0.0493,instrumentalness
-Eastern Europe,0.0479,instrumentalness
-North America,0.0496,instrumentalness
-South America,0.0386,instrumentalness
-Western Europe,0.0487,instrumentalness
-Africa / Middle East,0.0908,liveness
-Asia / Australia,0.0921,liveness
-Eastern Europe,0.1007,liveness
-North America,0.0994,liveness
-South America,0.0978,liveness
-Western Europe,0.1126,liveness
-Africa / Middle East,0.1297,loudness
-Asia / Australia,0.0923,loudness
-Eastern Europe,0.1194,loudness
-North America,0.1143,loudness
-South America,0.1849,loudness
-Western Europe,0.1261,loudness
-Africa / Middle East,0.1084,speechiness
-Asia / Australia,0.1424,speechiness
-Eastern Europe,0.1205,speechiness
-North America,0.102,speechiness
-South America,0.0928,speechiness
-Western Europe,0.1107,speechiness
-Africa / Middle East,0.1043,valence
-Asia / Australia,0.1033,valence
-Eastern Europe,0.1088,valence
-North America,0.1012,valence
-South America,0.1398,valence
-Western Europe,0.1004,valence
+song_feature,value
+HTML,90
+CSS,90
+D3,80
+Python,80
+Java,30
+Spark,30

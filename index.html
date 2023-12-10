@@ -1,6 +1,19 @@
 <!-- Written by: Kailey Cozart -->
 <!-- References and Sources Listed at Document End: Denoted by [n]-->
 
+<!-- Run Instructions:
+    1) In command prompt either: 
+    Python 3: python -m http.server 8000
+    Python 2: python -m SimpleHTTPServer 8000
+    2) In browser: http://localhost:8000/
+    3) Navigate to location of index.html
+-->
+
+<!-- Limitations:
+    1) Only tested in Chrome
+    2) Not designed for devices smaller than 1100px
+-->
+
 <!DOCTYPE html>
     <meta content="utf-8" http-equiv="encoding">
 
@@ -9,21 +22,14 @@
 
         <!-- D3 JS Library -->
         <script type="text/javascript" src="d3.v5.min.js"></script>
-        <script type="text/javascript" src="d3-tip.min.js"></script>
         <script type="text/javascript" src="d3-dsv.min.js"></script>
+        <script type="text/javascript" src="d3-tip.min.js"></script>
         
         <!-- CSS -->
         <style>
             /* Encompassing CSS */
             body, svg {
-                background-color: #212121;
-            }
-
-            #master-content-div {
-                width: 1099px;
-                margin: auto;
-                padding-top: 30px;
-                padding-bottom: 30px;
+                background-color: #1e3504;
             }
 
             /* Hero Div Component */
@@ -39,11 +45,21 @@
                     -moz-background-size: cover;
                     -o-background-size: cover;
                     background-size: cover;
-                padding-top: 200px;
+                padding-top: 100px;
                 text-align: center;
             }
+
+            .heroDiv::before { /* Color Overlay */
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 500px; /* Div's height + padding-top */
+                background-color: rgba(229, 235, 223, 0.514);
+            }
  
-            @font-face {
+            @font-face { /* [1] Special Font */
                 font-family: showtime;
                 src: url(showtime_font/Showtime-Regular.otf) format('otf'),
                     url(showtime_font/Showtime-Regular.woff) format('woff'),
@@ -52,22 +68,36 @@
             }
 
             .fancyText {
+                position: relative;
+                z-index: 1;
                 font-family: showtime;
                 font-weight: bold;
                 color: black;
                 font-size: 100px;
                 margin-top: 0px;
+                padding-top: 80px;
             }
 
-            /* Shared Non-choropleth CSS */
-            #line-chart > svg, #bar-chart > svg {
-                background-color: #fdfdfd;
+            /* Shared Component CSS */
+            #master-content-div {
+                width: 1099px;
+                margin: auto;
+                padding-top: 30px;
+                padding-bottom: 30px;
+            }
+
+            #bubble-chart > svg, #line-chart > svg, #bar-chart > svg {
+                background-color: white;
                 border-radius: 8px;
                 margin-bottom: 1px;
             }
 
             .container {
                 float: left;
+            }
+
+            .title {
+                font-family: sans-serif;
             }
 
             .axis-text {
@@ -78,9 +108,13 @@
             .chart-text {
                 font-size: 11.5px;
             }
+            
+            /* Bubble Chart Component */
+            .bubble {
+                font-family: sans-serif;
+            }
 
             /* Line Chart Component */
-
             .line-label-text {
                 font-size: 10px;
                 font-family: sans-serif;
@@ -109,7 +143,7 @@
                 border: 0px black solid;
                 padding: 5px;
                 padding-left: 10px;
-                background-color: #fdfdfd;
+                background-color: white;
                 font-weight: normal;
                 text-align: left;
             }
@@ -129,11 +163,11 @@
             border-top-right-radius: 6px;
             }
 
-            table tr:last-child td:first-child { /* [1] CSS to Bottom Left Corner */
+            table tr:last-child td:first-child { /* [2] CSS to Bottom Left Corner */
             border-bottom-left-radius: 6px;
             }
 
-            table tr:last-child td:last-child { /* [1] CSS to Bottom Right Corner */
+            table tr:last-child td:last-child { /* [2] CSS to Bottom Right Corner */
             border-bottom-right-radius: 6px;
             }
 
@@ -160,21 +194,8 @@
             var width = 954
 
             ////  Bubble Chart  //////////////////////////////////////////////////////////////////
-            // Create Bubble Chart Container
-            var bubbleChartSvgNoGroup = d3.select("#bubble-chart")
-                .append("svg")
-                .attr("width", width + margin.left + margin.right - (width / 2))
-                .attr("height", height + margin.top + margin.bottom - (height/ 2 ) + 50)
-
-            // Add Spacing for Bubble Chart within SVG
-            var moveBubbleChartHorizontal = 20
-            var moveBubbleChartVertical = 30
-
-            var bubbleChartSvg = bubbleChartSvgNoGroup.append("g") // This is split from above for dropdown changes
-                .attr("transform","translate(" + (margin.left + moveBubbleChartHorizontal) + "," + (margin.top + moveBubbleChartVertical) + ")")
-
             // File to be Loaded for Bubble Chart
-            var bubbleChartProm = d3.json("bubble-chart-data.json")
+            var bubbleChartProm = d3.csv("bubble-chart-data.csv")
 
             ////  Line Chart  //////////////////////////////////////////////////////////////////
             // Create Line Chart Container
@@ -216,7 +237,7 @@
             
             ////  Promises  //////////////////////////////////////////////////////////////////
             Promise.all(
-                [lineChartProm, barChartProm, tableProm, bubbleChartProm]
+                [bubbleChartProm, lineChartProm, barChartProm, tableProm]
             ).then(
                 ready
             )
@@ -226,16 +247,21 @@
                 // We Now Unpack Loaded Data
 
                 ////  Bubble Chart  //////////////////////////////////////////////////////////////////
-                var bubbleChartData  = data[3]
+                bubbleChartData = data[0].map(function(d) {
+                    return {
+                        name: d.name,
+                        value: +d.value / 10 - 35 // Read values as numbers, re-size values for bubbles
+                    }
+                })
 
                 ////  Line Chart  //////////////////////////////////////////////////////////////////
-                var lineChartData = data[0]
+                var lineChartData = data[1]
 
                 ////  Bar Chart  //////////////////////////////////////////////////////////////////
-                var barChartData = data[1].sort(function(b, a){return a.value - b.value})
+                var barChartData = data[2].sort(function(b, a){return a.value - b.value})
 
                 ////  Table  //////////////////////////////////////////////////////////////////
-                var tableData  = d3.csvParseRows(data[2])
+                var tableData  = d3.csvParseRows(data[3])
 
                 // Initial Render of All Components
                 createBubbleChart(bubbleChartData)
@@ -245,83 +271,75 @@
             }
 
             ////  Bubble Chart  //////////////////////////////////////////////////////////////////
-            var diameter = 960,
-                format = d3.format(",d")
-                
-                var color = ["#993404", "#fe9929", "grey"]
             function createBubbleChart(bubbleChartData) {
+                var bubbleContainerWidth = 1100
+                var bubbleContainerHeight = 500
 
-                var bubble = d3.pack()
-                //  .sort(null)
-                //  .sort(d3.ascending)
-                //  .sort(d3.descending)
-                  //    .sort( function(a, b) { return  -1;} ) // basically a < b always
-                    .size([diameter, diameter])
-                    .padding(1.5)
+                // Create SVG for Chart
+                var bubbleChartSvg = d3.select("#bubble-chart")
+                    .append("svg")
+                    .attr("width", bubbleContainerWidth)
+                    .attr("height", bubbleContainerHeight)
 
-                var svg = d3.select("body").append("svg")
-                    .attr("width", diameter)
-                    .attr("height", diameter)
+                // Add Chart Title
+                bubbleChartSvg.append("text")
+                    .text("Coursework Taken - Weighted by Couse Number")
+                    .attr("class", "title")
+                    .attr("x", width / 2 - 100)
+                    .attr("y", 30)
+
+                // [3] Create Simulation
+                var simulation = d3.forceSimulation(bubbleChartData)
+                    .force("center", d3.forceCenter(bubbleContainerWidth / 2, bubbleContainerHeight / 2 + 25)) // Force center of simulation to be in the middle of the div
+                    .force("collide", d3.forceCollide().radius(function(d) { return d.value + 2 })) // Force the bubbles to be near eachother with "+ n" pixels in between
+                    .force("x", d3.forceX().strength(0.03).x(function(d) { return (d.value * 7) - 30050})) // Pull bubbles' x coordinate in the direction of the center
+                    .force("y", d3.forceY().strength(0.03).y(function(d) { return bubbleContainerHeight / 2 })) // Pull bubbles' y coordinate in the direction of the center
+
+                // [3] Create Bubbles
+                var bubbles = bubbleChartSvg.selectAll(".bubble")
+                    .data(bubbleChartData)
+                    .enter().append("g")
                     .attr("class", "bubble")
+                    .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")" })
 
-                    var node = svg.selectAll(".node")
-                            .data(bubble.nodes(classes(root))
-                            .filter(function(d) { return !d.children; }))
-                            .enter().append("g")
-                            .attr("class", "node")
-                            .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+                bubbles.append("circle")
+                    .attr("r", function(d) { return d.value}) // Radius is the number in the value column of our csv
+                    .style("fill", "#bec991") // Bubble color
 
-                    node.append("title")
-                        .text(function(d) { return d.className + ": " + format(d.value); });
+                // [3] Create Bubble Labels
+                bubbles.append("text")
+                    .attr("dy", ".35em") // Moving the y coordinate of the label so that the label is in the center of the circle
+                    .style("text-anchor", "middle") // Anchor the text in the middle of the bubble
+                    .text(function(d) { return d.name }) // Label is the string value inside the name column of our csv
 
-                    node.append("circle")
-                        .attr("r", function(d) { return d.r; })
-                        .style("fill", function(d) 
-                                { 
-                                    // return color(d.packageName); 
-                                    return color(d.value); // this gives a different color for every leaf node
-                                });
-
-                    node.append("text")
-                        .attr("dy", ".3em")
-                        .style("text-anchor", "middle")
-                        // .text(function(d) { return d.className.substring(0, d.r / 3); });
+                // [3] Start Simulation
+                simulation.on("tick", function() {
+                    bubbles.attr("transform", function(d) { 
+                        return "translate(" + Math.max(d.value, Math.min(bubbleContainerWidth - d.value, d.x)) + "," 
+                        + Math.max(d.value, Math.min(bubbleContainerHeight - d.value, d.y)) + ")" })
+                })
             }
-
-            function classes(root) 
-{
-  var classes = [];
-
-  function recurse(name, node) {
-    if (node.children) node.children.forEach(function(child) { recurse(node.name, child); });
-    else classes.push({packageName: name, className: node.name, value: node.size});
-  }
-
-  recurse(null, root);
-  return {children: classes};
-}
-
-d3.select(self.frameElement).style("height", diameter + "px");
 
             ////  Line Chart  //////////////////////////////////////////////////////////////////
             function createLineChart(lineChartData) {
 
                 // Add Chart Title
                 lineChartSvg.append("text")
-                    .text("Skill Growth over Time")
+                    .text("Degree Completion over Time")
                     .attr("class", "title")
-                    .attr("x", 50)
+                    .attr("x", 90)
                     .attr("y", -15)
 
                 // Create X Axis
                 var x = d3.scaleTime()
                     .domain(d3.extent(lineChartData, function(d) { return d3.timeParse("%Y-%m-%d")(d.date) }))
                     .range([0, width / 2 - 100])
+                
                 lineChartSvg.append("g")
                     .attr("transform", "translate(0," + height / 2 + ")")
                     .call(d3.axisBottom(x)
-                        .tickValues(x.ticks().filter(function(d, i) { // Only show every 4th tick
-                            return i % 4 === 0
+                        .tickValues(x.ticks().filter(function(d, i) { // Only show every nth tick
+                            return i % 1 === 0
                         }))
                         .tickFormat(d3.timeFormat("%Y")))  
                         .attr("class", "chart-text")
@@ -336,12 +354,12 @@ d3.select(self.frameElement).style("height", diameter + "px");
                 x_axis.append("text")
                     .text("Year")
                     .attr("class", "axis-text")
-                    .attr("x", 225)
+                    .attr("x", 185)
                     .attr("y", -215)
                     .style("fill", "black")
 
                 // Max Value Observed for Y Axis
-                const max = d3.max(lineChartData, function(d){return 1.0})
+                const max = 100
 
                 // Create Y Axis
                 var y = d3.scaleLinear()
@@ -353,10 +371,10 @@ d3.select(self.frameElement).style("height", diameter + "px");
 
                 // Add Y Axis Label
                 y_axis.append("text")
-                    .text("Value")
+                    .text("Percentage Complete")
                     .attr("class", "axis-text")
                     .attr("transform", "rotate(-90)")
-                    .attr("x", -110)
+                    .attr("x", -60)
                     .attr("y", -35)
                     .style("fill", "black")
 
@@ -383,14 +401,11 @@ d3.select(self.frameElement).style("height", diameter + "px");
                     .attr("offset", function(d) { return d.offset })
                     .attr("stop-color", function(d) { return d.color }) */
                 
-                // Set Color Scheme, Colors from [18]
-                var unused_color_set = ["#F05039", "#E57A77", "#EEBAB4", "lightslategrey", "#3D65A5",
-                    "#7CA1CC", "#A8B6CC"]
-                // var colors = ["#E57A77", "#3D65A5", "grey"]
-                var colors = ["#993404", "#fe9929", "grey"]
+                // Create Line Colors for Series
+                var colors = ["#36563e", "#907350"]
 
                 // Create Labels for Series
-                seriesLabels = ["Avg Loudness", "Avg Speechiness", "Avg Acousticness"]
+                seriesLabels = ["BA Computer Science", "MS Computer Science"]
 
                 // Create Lines and Labels
                 for (let i in seriesLabels) {
@@ -432,27 +447,11 @@ d3.select(self.frameElement).style("height", diameter + "px");
                             var thisLineNumber = "#line-number-" + i
                             d3.select(thisLineNumber).style("stroke-dasharray", ("3, 3"))
                         })
-
-                    /* linesElement // Line Circle Labels
-                        .append("g")
-                        .append("circle")
-                        .attr("fill", colors[i])
-                        .attr("r", 5)
-                        .attr("cx", 410)
-                        .attr("cy", d => { return y(d[seriesLabels[i]]) })
-                        .on("mouseover", function () {
-                            var thisLineNumber = "#line-number-" + i
-                            d3.select(thisLineNumber).style("stroke-dasharray", null)
-                        })
-                        .on("mouseout", function () {
-                            var thisLineNumber = "#line-number-" + i
-                            d3.select(thisLineNumber).style("stroke-dasharray", ("3, 3"))
-                        }) */
                 }
             }
 
             ////  Bar Chart  //////////////////////////////////////////////////////////////////
-            // Based on [3]
+            // Based on [4]
             function createBarChart(barChartData) {
 
                 // Add Chart Title
@@ -512,17 +511,17 @@ d3.select(self.frameElement).style("height", diameter + "px");
                     .attr("y", function (d) { return y(d.song_feature) })
                     .attr("width", function (d) { return x(d.value) })
                     .attr("height", y.bandwidth())
-                    .attr("fill", "#d95f0e")
+                    .attr("fill", "#36563e")
                     .on("mouseover", function () {
-                        d3.select(this).attr("fill", "#fe9929")
+                        d3.select(this).attr("fill", "#bec991")
                     })
                     .on("mouseout", function () {
-                        d3.select(this).attr("fill", "#d95f0e")
+                        d3.select(this).attr("fill", "#36563e")
                     })
             }
 
             ////  Table  //////////////////////////////////////////////////////////////////
-            // Based on [2]
+            // Based on [5]
             function createTable(tableData) {
 
                 // Create Table Element
@@ -549,43 +548,27 @@ d3.select(self.frameElement).style("height", diameter + "px");
                     .data(tableData[0])
                     .enter()
                     .append("th")
-                    .style("background-color", "rgb(179, 179, 179)")
+                    .style("background-color", "#bec991")
                     .text(d => d)
 
                 // Create Non-header Table Rows
                 var tbody = table.append("tbody")
 
-                // Create First Row of Ideal Songs
-                tbody.append("tr")
-                    .selectAll("td")
-                    .data(tableData[0])
-                    .enter()
-                    .append("td")
-                    .style("background-color", "#fe9929")
-                    .on("mouseover", function(){
-                        d3.select(this).style("background-color", "#fed98e")
-                    })
-                    .on("mouseout", function(){
-                        d3.select(this).style("background-color", "#fe9929")
-                    })
-                    .text(d => d)
-                    .style("font-size", "12px")
-
                 // Add Subsequent Rows
                 tbody.selectAll("tr")
-                    .data(tableData.slice(0))
+                    .data(tableData.slice(1))
                     .enter()
                     .append("tr")
                     .selectAll("td")
                     .data(d => d)
                     .enter()
                     .append("td")
-                    .style("background-color", "#fdfdfd")
+                    .style("background-color", "white")
                     .on("mouseover", function(){
-                        d3.select(this).style("background-color", "#fed98e")
+                        d3.select(this).style("background-color", "#bec991")
                     })
                     .on("mouseout", function(){
-                        d3.select(this).style("background-color", "#fdfdfd")
+                        d3.select(this).style("background-color", "white")
                     })
                     .text(d => d)
                     .style("font-size", "12px")
@@ -596,15 +579,17 @@ d3.select(self.frameElement).style("height", diameter + "px");
 </html>
 
 <!-- Sources:
-    [1] stackoverflow.com/questions/628301/the-border-radius-property-and-border-collapsecollapse-dont-mix-how-can-i-use
-    [2] codepen.io/blackjacques/pen/RYVpKZ
-    [3] d3-graph-gallery.com/graph/barplot_ordered.html
-    [4] d3-graph-gallery.com/graph/line_color_gradient_svg.html
-    [5] observablehq.com/@d3/color-schemes -- For color scheme info.
-    [6] stackoverflow.com/questions/61205390/how-can-i-fix-the-devtools-failed-to-load-sourcemap-could-not-load-content-er -- For js library issues.
-    [7] d3-graph-gallery.com/graph/interactivity_tooltip.html -- For an example of a tooltip.
-    [8] stackoverflow.com/questions/41646689/line-break-for-d3-circle-title-tooltiptext -- For fixing newline problem.
-    [9] d3-legend.susielu.com/#color-threshold -- For legend color information.
-    [10] stackoverflow.com/questions/22452112/nvd3-clear-svg-before-loading-new-chart -- For clearning svg.
-    [n] My previous d3 hw assignments in CSE6242.
+    [1] pixelsurplus.com/products/showtime-free-handmade-calligraphy-font -- Font for Top Div
+    [2] stackoverflow.com/questions/628301/the-border-radius-property-and-border-collapsecollapse-dont-mix-how-can-i-use -- Border Styling for Table
+    [3] d3indepth.com/force-layout/ -- For Simulation Involving Bubbles
+    [4] d3-graph-gallery.com/graph/barplot_ordered.html -- For Bar Chart Example
+    [5] codepen.io/blackjacques/pen/RYVpKZ -- For Line Chart Example
+    [6] color-hex.com/color-palette/60344, color-hex.com/color-palette/36578 -- Color Palettes
+    [n-1] Some additional help from AI tools via Google searches and OpenAI queries. -- For all sections.
+    [n] My previous d3 hw assignments in CSE6242. -- For all sections, especially promises, line charts, bar charts, and tables.
+
+    Not Used Yet:
+    [?] d3-graph-gallery.com/graph/line_color_gradient_svg.html -- For Color Gradient Creation
+    [?] d3-graph-gallery.com/graph/interactivity_tooltip.html -- For an example of a tooltip.
+    [?] stackoverflow.com/questions/22452112/nvd3-clear-svg-before-loading-new-chart -- For clearning svg.
 -->
