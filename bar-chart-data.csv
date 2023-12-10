@@ -1,4 +1,7 @@
 region,value,song_feature
+generic,300,Digital Forensics
+generic,500,Data Analytics
+generic,500,Calculus I-III
 Africa / Middle East,0.1005,acousticness
 Asia / Australia,0.1068,acousticness
 Eastern Europe,0.1101,acousticness
