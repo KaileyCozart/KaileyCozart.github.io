@@ -203,18 +203,13 @@
                 var tableData  = d3.csvParseRows(data[2])
 
                 // Initial Render of All Components
-                createLineChart(lineChartData,selectedRegion)
-                createBarChart(barChartData,selectedRegion)
-                createTable(tableData,selectedRegion)
+                createLineChart(lineChartData)
+                createBarChart(barChartData)
+                createTable(tableData)
             }
 
             ////  Line Chart  //////////////////////////////////////////////////////////////////
-            function createLineChart(lineChartData,selectedRegion) {
-
-                // Filter by Region
-                lineChartData = lineChartData.filter(function(d) {
-                    return d.region === selectedRegion
-                })
+            function createLineChart(lineChartData) {
 
                 // Add Chart Title
                 lineChartSvg.append("text")
@@ -363,12 +358,7 @@
 
             ////  Bar Chart  //////////////////////////////////////////////////////////////////
             // Based on [3]
-            function createBarChart(barChartData, selectedRegion) {
-
-                // Filter by Region
-                barChartData = barChartData.filter(function (d) {
-                    return d.region === selectedRegion
-                })
+            function createBarChart(barChartData) {
 
                 // Add Chart Title
                 barChartSvg.append("text")
@@ -438,7 +428,7 @@
 
             ////  Table  //////////////////////////////////////////////////////////////////
             // Based on [2]
-            function createTable(tableData, selectedRegion) {
+            function createTable(tableData) {
 
                 // Create Table Element
                 table = d3.select('#table').append('table')
@@ -466,11 +456,6 @@
                     .append("th")
                     .style("background-color", "rgb(179, 179, 179)")
                     .text(d => d)
-
-                // Filter by Region
-                tableData = tableData.slice(1).filter(function (row) {
-                    return row[tableData[0].indexOf('region')] === selectedRegion
-                })
 
                 // Create Non-header Table Rows
                 var tbody = table.append("tbody")
