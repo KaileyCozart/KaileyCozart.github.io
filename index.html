@@ -174,7 +174,7 @@
                 .attr("transform","translate(" + (margin.left + moveBubbleChartHorizontal) + "," + (margin.top + moveBubbleChartVertical) + ")")
 
             // File to be Loaded for Bubble Chart
-            var bubbleChartProm = d3.csv("bubble-chart-data.json")
+            var bubbleChartProm = d3.json("bubble-chart-data.json")
 
             ////  Line Chart  //////////////////////////////////////////////////////////////////
             // Create Line Chart Container
@@ -245,10 +245,10 @@
             }
 
             ////  Bubble Chart  //////////////////////////////////////////////////////////////////
-            function createBubbleChart(bubbleChartData) {
-                var diameter = 960,
+            var diameter = 960,
                 format = d3.format(",d"),
                 color = d3.scale.category20c();
+            function createBubbleChart(bubbleChartData) {
 
                 var bubble = d3.layout.pack()
                 //  .sort(null)
