@@ -1,7 +1,13 @@
-song_feature,value
-HTML,90
-CSS,90
-D3,80
-Python,80
-Java,30
-Spark,30
+skill,value
+HTML/CSS,4
+JS/D3,4
+Python,4
+Java,2.5
+C/C++,1.5
+Spark,1
+Git,3
+Pandas,3
+Tableau,1
+Relativity,3
+Scikit-learn,1.5
+Academic Writing,4

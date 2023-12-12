@@ -1,11 +1,11 @@
-value,name
-1200,Digital Forensics I-III
-500,Calculus I-IV
-400,Natural Sciences
-400,Crypto
-1600,Math
-500,Data Structures
-700,"C, C++, & Java"
-1100,Liberal Arts
-1300,CS Required Electives
-600,Data Analytics
+name,degree,value
+Digital Forensics I-III,undergrad,1200
+Calculus I-IV,undergrad,500
+Natural Sciences,undergrad,400
+Crypto,undergrad,400
+Math,undergrad,1600
+Data Structures,undergrad,500
+"C, C++, & Java",undergrad,700
+Liberal Arts,undergrad,1100
+CS Required Electives,undergrad,1300
+Data Analytics,masters,600

@@ -83,7 +83,6 @@
                 width: 1099px;
                 margin: auto;
                 padding-top: 30px;
-                padding-bottom: 30px;
             }
 
             #bubble-chart > svg, #line-chart > svg, #bar-chart > svg {
@@ -98,6 +97,7 @@
 
             .title {
                 font-family: sans-serif;
+                font-weight: bold;
             }
 
             .axis-text {
@@ -112,6 +112,7 @@
             /* Bubble Chart Component */
             .bubble {
                 font-family: sans-serif;
+                font-size: 11px;
             }
 
             /* Line Chart Component */
@@ -128,6 +129,10 @@
             }
 
             /* Table Component */
+            table {
+                margin-bottom: 30px;
+            }
+
             #table-title {
                 font-size: 15px;
                 font-weight: bold;
@@ -290,9 +295,9 @@
 
                 // [3] Create Simulation
                 var simulation = d3.forceSimulation(bubbleChartData)
-                    .force("center", d3.forceCenter(bubbleContainerWidth / 2, bubbleContainerHeight / 2 + 25)) // Force center of simulation to be in the middle of the div
+                    .force("center", d3.forceCenter(bubbleContainerWidth / 2 - 100, bubbleContainerHeight / 2 + 25)) // Force center of simulation to be in the middle of the div
                     .force("collide", d3.forceCollide().radius(function(d) { return d.value + 2 })) // Force the bubbles to be near eachother with "+ n" pixels in between
-                    .force("x", d3.forceX().strength(0.03).x(function(d) { return (d.value * 7) - 30050})) // Pull bubbles' x coordinate in the direction of the center
+                    .force("x", d3.forceX().strength(0.03).x(function(d) { return (d.value * 7) - 1050})) // Pull bubbles' x coordinate in the direction of the center
                     .force("y", d3.forceY().strength(0.03).y(function(d) { return bubbleContainerHeight / 2 })) // Pull bubbles' y coordinate in the direction of the center
 
                 // [3] Create Bubbles
@@ -305,6 +310,12 @@
                 bubbles.append("circle")
                     .attr("r", function(d) { return d.value}) // Radius is the number in the value column of our csv
                     .style("fill", "#bec991") // Bubble color
+                    .on("mouseover", function () {
+                        d3.select(this).style("fill", "rgb(144, 115, 80)")
+                    })
+                    .on("mouseout", function () {
+                        d3.select(this).style("fill", "#bec991")
+                    })
 
                 // [3] Create Bubble Labels
                 bubbles.append("text")
@@ -405,7 +416,7 @@
                 var colors = ["#36563e", "#907350"]
 
                 // Create Labels for Series
-                seriesLabels = ["BA Computer Science", "MS Computer Science"]
+                seriesLabels = ["BA Comp Sci", "MS Comp Sci"]
 
                 // Create Lines and Labels
                 for (let i in seriesLabels) {
@@ -456,7 +467,7 @@
 
                 // Add Chart Title
                 barChartSvg.append("text")
-                    .text("Coursework Taken - Weighted by Couse Number")
+                    .text("Programming Skills")
                     .attr("class", "title")
                     .attr("x", width / 4 - 170)
                     .attr("y", -15)
@@ -464,7 +475,7 @@
                 // Create Y Axis
                 var y = d3.scaleBand()
                     .range([0, height / 2])
-                    .domain(barChartData.map(function (d) { return d.song_feature }))
+                    .domain(barChartData.map(function (d) { return d.skill }))
                     .padding(0.2)
 
                 // Create Y Axis Group
@@ -475,7 +486,7 @@
 
                 // Add Y Axis Label
                 y_axis.append("text")
-                    .text("Feature")
+                    .text("Skill")
                     .attr("class", "axis-text")
                     .attr("transform", "rotate(-90)")
                     .attr("x", -100)
@@ -496,7 +507,7 @@
 
                 // Add X Axis Label
                 x_axis.append("text")
-                    .text("Mean Decrease in Impurity")
+                    .text("Level of Proficiency (1 to 5)")
                     .attr("class", "axis-text")
                     .attr("x", width / 4 - 65)
                     .attr("y", 35)
@@ -508,7 +519,7 @@
                     .enter()
                     .append("rect")
                     .attr("x", 0)
-                    .attr("y", function (d) { return y(d.song_feature) })
+                    .attr("y", function (d) { return y(d.skill) })
                     .attr("width", function (d) { return x(d.value) })
                     .attr("height", y.bandwidth())
                     .attr("fill", "#36563e")
