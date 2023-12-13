@@ -1,0 +1,1090 @@
+<!-- Back-End Model Written by: Sumanth Chundru, Patrick Wu, Pan Ben Wong, Benjamin Ahn -->
+<!-- Front-End Written by: Kailey Cozart -->
+<!-- References and Sources Listed at Document End: Denoted by [n]-->
+
+<!-- Hosted:
+    https://github.gatech.edu/pages/kcozart6/kcozart6.github.io/
+-->
+
+<!-- Run Instructions:
+    1) In command prompt either: 
+    python -m http.server 8000
+    python -m SimpleHTTPServer 8000
+    2) In browser: http://localhost:8000/
+    3) Navigate to location to Music.html
+-->
+
+<!-- Limitations:
+    1) Only tested in Chrome
+    2) Not designed for devices smaller than 1100px
+-->
+
+<!DOCTYPE html>
+    <meta content="utf-8" http-equiv="encoding">
+
+    <head>
+        <title>Predicting Song Virality by Region</title>
+
+        <!-- D3 JS Library -->
+        <script type="text/javascript" src="d3.v5.min.js"></script>
+        <script type="text/javascript" src="d3-legend.min.js"></script>
+        <script type="text/javascript" src="d3-tip.min.js"></script>
+        <script type="text/javascript" src="d3-dsv.min.js"></script>
+        <script type="text/javascript" src="d3-geo-projection.v2.min.js"></script>
+        <script type="text/javascript" src="topojson.v2.min.js"></script>
+        
+        <!-- CSS -->
+        <style>
+            /* Encompassing CSS */
+            body, svg {
+                background-color: #212121;
+            }
+
+            #master-content-div {
+                width: 1099px;
+                margin: auto;
+            }
+
+            .title {
+                font-family: sans-serif;
+                font-weight: bold;
+            }
+
+            /* Choropleth Component */
+            #choropleth {
+                background-color: #f0f0f0;
+                border-radius: 8px;
+            }
+
+            #regionDropdown {
+                background-color: #fff;
+                padding-left: 10px;
+                padding-right: 10px;
+                border-radius: 25px;
+                border-width: 0px;
+                height: 30px;
+                margin-left: 450px;
+                margin-top: 430px;
+                position: absolute;
+                outline-color: white;
+            }
+
+            #legend {
+                font-size: 12px;
+                font-family: sans-serif;
+            }
+
+            .legendTitle {
+                font-weight: bold;
+            }
+
+            #tooltip {
+                color: black;
+                padding: 5px; /* Eliminate if the extra space at bottom of page on load is troublesome. */
+                border-radius: 5px;
+                font-size: 12px;
+                font-family: sans-serif;
+                position: sticky;
+                top:430px;
+                margin-top: -1145px;
+                margin-left: 85px;
+                width: 200px;
+            }
+
+            /* Shared Non-choropleth CSS */
+            #line-chart > svg, #bar-chart > svg, form, #output, #popup {
+                background-color: #fdfdfd;
+                border-radius: 8px;
+            }
+
+            .container {
+                float: left;
+            }
+
+            .axis-text {
+                font-size: 13px;
+                font-weight: bolder;
+            }
+
+            .chart-text {
+                font-size: 11.5px;
+            }
+
+            /* Line Chart Component */
+
+            .line-label-text {
+                font-size: 10px;
+                font-family: sans-serif;
+                letter-spacing: 0.15px;
+                font-weight: bold;
+            }
+
+            /* Bar Chart Component */
+            #bar-chart { 
+                margin-left: 5px;
+            }
+
+            /* Table Component */
+            #table-title {
+                font-size: 15px;
+                font-weight: bold;
+            }
+
+            td,th {
+                font-family: sans-serif;
+            }
+            
+            th {
+                font-size: 14px;
+                text-transform: capitalize;
+                border: 0px black solid;
+                padding: 5px;
+                padding-left: 10px;
+                background-color: #fdfdfd;
+                font-weight: normal;
+                text-align: left;
+            }
+
+            td {
+                border: 0px black solid;
+                padding: 5px;
+                padding-left: 10px;
+                line-height: 1.15
+            }
+
+            #table-title-row th:first-child { /* CSS to Round Top Left Corner */
+            border-top-left-radius: 6px;
+            }
+
+            #table-title-row th:last-child { /* CSS to Round Top Right Corner */
+            border-top-right-radius: 6px;
+            }
+
+            table tr:last-child td:first-child { /* [1] CSS to Bottom Left Corner */
+            border-bottom-left-radius: 6px;
+            }
+
+            table tr:last-child td:last-child { /* [1] CSS to Bottom Right Corner */
+            border-bottom-right-radius: 6px;
+            }
+
+            /* Form Component */
+            form {
+                margin-top: 554px;
+                display: flex;
+                flex-wrap: wrap;
+            }
+
+            .form-row {
+                display: flex;
+                align-items: center;
+                margin-bottom: 16px;
+                margin-left: 15px;
+                flex: 0 0 calc(50% - 20px);
+            }
+
+            .form-row:first-child {
+                margin-top: 15px;
+            }
+
+            label {
+                margin-bottom: 4px;
+                font-family: sans-serif;
+            }
+
+            input {
+                padding: 8px;
+                margin-bottom: 12px;
+                margin-right: 5px;
+                margin-left: 5px;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                box-sizing: border-box;
+                width: 100%;
+                background-color: white;
+            }
+
+            button {
+                padding: 8px;
+                cursor: pointer;
+                background: linear-gradient(to right, #fe9929, #d95f0e);
+                border: none;
+                color: #fff;
+                border-radius: 5px;
+                margin: 10px auto;
+                margin-top: -5px;
+            }
+
+            button:hover {
+                background: linear-gradient(to right, #d95f0e, #fe9929);
+            }
+
+            #output {
+                text-align: center;
+                margin: 4px auto;
+            }
+
+            /* Informational Pop-up Component */
+
+            #popup {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                max-width: 1000px;
+                font-family: sans-serif;
+                text-align: center;
+                padding: 20px;
+                display: none;
+            }
+
+            .close-popup-button {
+                font-size: 15px;
+                position: absolute;
+                top: 15px;
+                right: 15px;
+                cursor: pointer;
+            }
+
+            .popup-text-title {
+                font-size: 20px;
+                font-weight: bold;
+            } 
+            
+            .popup-text {
+                font-size: 16px;
+                line-height: 20px;
+            }
+
+            #overlay-div {
+                background-color: rgba(61, 84, 126, 0.5);
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                display: none;
+            }
+
+            /* Footer Text Component */
+            #explanation {
+                font-style: italic;
+                font-family: sans-serif;
+                text-transform: lowercase;
+                font-size: 10px;
+                display: block;
+                color: #f0f0f0;
+                margin-bottom: 5px;
+            }
+        </style>
+    </head>
+
+
+    <body>
+        <!-- Define HTML Elements for Page: Do Not Reorder -->
+        <div id="master-content-div">
+            <select id="regionDropdown"></select>
+            <svg id="choropleth"></svg>
+            <div id="line-chart" class="container"></div>
+            <div id="bar-chart" class="container"></div>
+            <div id="table" class="container"></div>
+            <form id="randomPercentageForm">
+                <div class="form-row">
+                  <label for="danceability">Danceability:</label>
+                  <input type="text" id="danceability" name="danceability" required placeholder="0.0 to 1.0">
+                </div>
+              
+                <div class="form-row">
+                  <label for="energy">Energy:</label>
+                  <input type="text" id="energy" name="energy" required placeholder="0.0 to 1.0">
+                </div>
+              
+                <div class="form-row">
+                  <label for="key">Key:</label>
+                  <input type="text" id="key" name="key" required placeholder="0 to 11">
+                </div>
+              
+                <div class="form-row">
+                  <label for="loudness">Loudness:</label>
+                  <input type="text" id="loudness" name="loudness" required placeholder="-60 to 0">
+                </div>
+              
+                <div class="form-row">
+                  <label for="mode">Mode:</label>
+                  <input type="text" id="mode" name="mode" required placeholder="0 or 1">
+                </div>
+              
+                <div class="form-row">
+                  <label for="speechiness">Speechiness:</label>
+                  <input type="text" id="speechiness" name="speechiness" required placeholder="0.0 to 1.0">
+                </div>
+              
+                <div class="form-row">
+                  <label for="acousticness">Acousticness:</label>
+                  <input type="text" id="acousticness" name="acousticness" required placeholder="0.0 to 1.0">
+                </div>
+              
+                <div class="form-row">
+                  <label for="instrumentalness">Instrumentalness:</label>
+                  <input type="text" id="instrumentalness" name="instrumentalness" required placeholder="0.0 to 1.0">
+                </div>
+              
+                <div class="form-row">
+                  <label for="liveness">Liveness:</label>
+                  <input type="text" id="liveness" name="liveness" required placeholder="0.0 to 1.0">
+                </div>
+              
+                <div class="form-row">
+                  <label for="valence">Valence:</label>
+                  <input type="text" id="valence" name="valence" required placeholder="0.0 to 1.0">
+                </div>
+              
+                <div class="form-row">
+                  <label for="tempo">Tempo:</label>
+                  <input type="text" id="tempo" name="tempo" required placeholder="BPM">
+                </div>
+              
+                <div class="form-row">
+                  <label for="time_signature">Time Signature:</label>
+                  <input type="text" id="time_signature" name="time_signature" required placeholder="1 to 7">
+                </div>
+              
+                <button type="button" id="predict-button">Predict Song's Success</button>
+            </form>
+            <div id="output"></div>
+            <div id="explanatory-text-bottom" class="container">
+                <text id="explanation">team 016</text>
+            </div>
+            <div id="tooltip"></div>
+            <div id="overlay-div"></div>
+            <div id="popup">
+                <span class="close-popup-button" onclick="closePopup()">X</span>
+                <p class="popup-text-title">Predicting Song Virality by Region</p>
+                <p class="popup-text">This tool allows you to explore musical data by region as 
+                    well as predict how likely your song will be a chart topper 
+                    given the characteristics of a song that Spotify gives you. 
+                    The top visual shows the relevant countries per region we 
+                    analyzed as well as the peak number of streams for a song 
+                    for each country. The line chart shows the average of the 
+                    top 3 features by feature importance over time. The bar chart 
+                    shows the feature importance of each different model. The table 
+                    below shows some relevant features of the top 5 songs in 
+                    that region. Finally, the bottom visualization allows users 
+                    to input features of a song and predict how likely it will 
+                    be viral in the selected region.</p>
+            </div>            
+        </div>
+        
+        <!-- D3 Code -->
+        <script>
+            // Define Dimensions for SVGs
+            margin = ({top: 20, right: 30, bottom: 30, left: 40})
+            var height = 500
+            var width = 954
+            
+            ////  Choropleth  //////////////////////////////////////////////////////////////////
+            // Choropleth Width Variables
+            var choropleth_added_width = 75
+            var choropleth_width = width +  margin.left + margin.right + choropleth_added_width
+
+            // Create Choropleth Container
+            svg = d3.select("#choropleth")
+                .attr("width", choropleth_width)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+            
+            // Create Color Scheme Split by Data's Quantiles
+            var color = d3.scaleQuantile()
+
+            // Create Earth Projection and Path
+            var projection = d3.geoMercator() // Another option is .geoNaturalEarth()
+                .translate([width / 2, height / 2])
+                .scale(150)
+                .center([0, 10])
+            var path = d3.geoPath()
+                .projection(projection)
+
+            // Create Tooltip for Choropleth
+            var tooltip = d3.select("#tooltip")
+
+            // Global Variables for Choropleth
+            var datamap_all = d3.map() // Holds column used to color code choropleth
+            var datamap = d3.map() // Holds additional column referenced by tooltip
+
+            // Files to be Loaded for Choropleth
+            var worldProm = d3.json("world_countries.json")
+            var choroplethProm = d3.csv("choropleth-data.csv")
+
+            ////  Line Chart  //////////////////////////////////////////////////////////////////
+            // Create Line Chart Container
+            var lineChartSvgNoGroup = d3.select("#line-chart")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right - (width / 2))
+                .attr("height", height + margin.top + margin.bottom - (height/ 2 )+ 50)
+
+            // Add Spacing for Line Chart within SVG
+            var moveLineChartHorizontal = 20
+            var moveLineChartVertical = 30
+
+            var lineChartSvg = lineChartSvgNoGroup.append("g") // This is split from above for dropdown changes
+                .attr("transform","translate(" + (margin.left + moveLineChartHorizontal) + "," + (margin.top + moveLineChartVertical) + ")")
+
+            // File to be Loaded for Line Chart
+            var lineChartProm = d3.csv("line-chart-data.csv")
+            
+            ////  Bar Chart  //////////////////////////////////////////////////////////////////
+            // Create Bar Chart Container
+            var barChartSvgNoGroup = d3.select("#bar-chart")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right - (width / 2))
+                .attr("height", height + margin.top + margin.bottom - (height/ 2 ) + 50)
+
+            // Add Spacing for Bar Chart within SVG
+            var moveBarChartHorizontal = 75
+            var moveBarChartVertical = 30
+
+            var barChartSvg = barChartSvgNoGroup.append("g") // This is split from above for dropdown changes
+                .attr("transform","translate(" + (margin.left + moveBarChartHorizontal) + "," + (margin.top + moveBarChartVertical) + ")")
+
+            // File to be Loaded for Bar Chart
+            var barChartProm = d3.csv("bar-chart-data.csv")
+
+            ////  Table  //////////////////////////////////////////////////////////////////
+            // File to be Loaded for Table
+            var tableProm = d3.text("table-data.csv")
+            
+            ////  Promises  //////////////////////////////////////////////////////////////////
+            Promise.all(
+                [worldProm, choroplethProm, lineChartProm, barChartProm, tableProm]
+            ).then(
+                ready
+            )
+            
+            ////  Ready  //////////////////////////////////////////////////////////////////
+            function ready(data) { // This is called when the data has been read
+                // We Now Unpack Loaded Data
+
+                ////  Choropleth  //////////////////////////////////////////////////////////////////
+                var world = data[0]
+                var choroplethData = data[1]
+
+                ////  Line Chart  //////////////////////////////////////////////////////////////////
+                var lineChartData = data[2]
+
+                ////  Bar Chart  //////////////////////////////////////////////////////////////////
+                var barChartData = data[3].sort(function(b, a){return a.value - b.value})
+
+                ////  Table  //////////////////////////////////////////////////////////////////
+                var tableData  = d3.csvParseRows(data[4])
+                
+                ////  Dropdown  //////////////////////////////////////////////////////////////////
+                // Select Options for Dropdown
+                var listOfOptions = []
+                for (i in choroplethData) {
+                    if (!(listOfOptions.includes(choroplethData[i].region))) {
+                        listOfOptions.push(choroplethData[i].region)
+                    }
+                }
+
+                // Set Options in Alphabetical Order, Eliminate Blanks
+                listOfOptions = listOfOptions.sort().filter(d => d)
+
+                // Append Options to Dropdown
+                var dropdown = d3.select("#regionDropdown")
+                    .selectAll("options")
+                    .data(listOfOptions)
+                    .enter()
+                    .append("option")
+                    .text(d => {return d})
+                    .attr("value", d => {return d})
+
+                ////  UPDATE COMPONENTS  //////////////////////////////////////////////////////////////////
+                // Event Listener for Dropdown
+                // Update Components when Selection Changes
+                var selectedRegion = listOfOptions[0]
+                d3.select("#regionDropdown").on("change", function(d) {
+                    selectedRegion = d3.select(this).node().value
+                    datamap.clear()
+                    datamap.clear()
+                    d3.selectAll("table").remove() // Remove table
+                    d3.selectAll("svg > *").remove() // Remove svg element data
+
+                    ////  Choropleth  //////////////////////////////////////////////////////////////////
+                    // Add Group Back to Choropleth
+                    svg = d3.select("#choropleth")
+                        .attr("width", width +  margin.left + margin.right + choropleth_added_width)
+                        .attr("height", height + margin.top + margin.bottom)
+                        .append("g")
+                        .attr("transform", "translate(" + (margin.left + 0) + "," + margin.top + ")") 
+                    
+                    // Re-render Choropleth
+                    createChoropleth(world, choroplethData, selectedRegion)
+                
+                    ////  Line Chart  //////////////////////////////////////////////////////////////////
+                    // Add Group Back to Line Chart
+                    lineChartSvg = lineChartSvgNoGroup.append("g")
+                        .attr("transform","translate(" + (margin.left + moveLineChartHorizontal) + "," + (margin.top + moveLineChartVertical) + ")")
+
+                    // Re-render Line Chart
+                    createLineChart(lineChartData,selectedRegion)
+
+                    ////  Bar Chart  //////////////////////////////////////////////////////////////////
+                    // Add Group Back to Bar Chart
+                    barChartSvg = barChartSvgNoGroup.append("g")
+                        .attr("transform","translate(" + (margin.left + moveBarChartHorizontal) + "," + (margin.top + moveBarChartVertical) + ")")
+                    
+                    // Re-render Bar Chart
+                    createBarChart(barChartData, selectedRegion)
+
+                    ////  Table  //////////////////////////////////////////////////////////////////
+                    // Re-render Table
+                    createTable(tableData,selectedRegion)
+
+                    ////  Predict Success  //////////////////////////////////////////////////////////////////
+                    // Re-calculate Prediction
+                    updatePrediction(selectedRegion)
+                })
+
+                ////  Predict Success  //////////////////////////////////////////////////////////////////
+                d3.select("#predict-button").on("click", function(d) {
+                    updatePrediction(selectedRegion)
+                })
+
+                // Initial Render of All Components
+                createChoropleth(world, choroplethData, selectedRegion)
+                createLineChart(lineChartData,selectedRegion)
+                createBarChart(barChartData,selectedRegion)
+                createTable(tableData,selectedRegion)
+                document.getElementById('output').innerHTML = `<strong>Predicted Success for ${selectedRegion}:</strong><br>${0}%`
+            }
+
+            ////  Introductory Pop-up  //////////////////////////////////////////////////////////////////
+        
+            // Show Pop-up On Load
+            function showPopup() {
+                popup = document.getElementById('popup')
+                popup.style.display = 'block'
+
+                overlay_div = document.getElementById('overlay-div')
+                overlay_div.style.display = 'block'
+            }
+            window.onload = showPopup
+
+            // Close Pop-up On Click
+            function closePopup() {
+                popup = document.getElementById('popup')
+                popup.style.display = 'none'
+
+                overlay_div = document.getElementById('overlay-div')
+                overlay_div.style.display = 'none'
+            }
+
+            ////  Choropleth  //////////////////////////////////////////////////////////////////
+            function createChoropleth(world, choroplethData, selectedRegion) {
+
+                // Filter by Region
+                for (let i in choroplethData) {
+                    datamap_all.set(choroplethData[i].country, choroplethData[i]["streams"] || 0)
+                    if (choroplethData[i].region == selectedRegion) {
+                        datamap.set(choroplethData[i].country, choroplethData[i]["streams"] || 0)
+                    }
+                }
+
+                // Tooltip Mouseover // TODO: Tooltip Broken
+                var mouseover = function(d) {
+                    d3.select(this).attr("fill", "DimGray") 
+                }
+
+                // Tooltip Mousemove
+                var mousemove = function(d) {
+                    tooltip.html("Country: " + d.properties.name + "<br />"
+                        + "Highest Number of Streams: " + (datamap_all.get(d.properties.name) || "Unknown") + "<br />")
+                }
+
+                // Tooltip Mouseleave
+                var mouseleave = function(d) {
+                    d3.select(this).attr("fill", d => {
+                        d["streams"] = datamap.get(d.properties.name)
+                        return color(d["streams"]) || "#b3b3b3" // Return generic color if no streams is found
+                    })    
+                
+                    tooltip.html("Country: " + " " + "<br />"
+                        + "Highest Number of Streams: " + " " + "<br />")
+                }
+
+                // Choropleth Legend Colors
+                color = color.domain(datamap.values())
+                    // .range(["#edf8e9","#bae4b3", "#74c476", "#238b45"])
+                    // .range(["#A8B6CC","#7CA1CC", "#3D65A5", "#1F449C"])
+                    .range(["#fed98e","#fe9929", "#d95f0e", "#993404"])
+
+                // Add Countries and Attach Listeners
+                svg.append("g")
+                    .attr("id", "countries")
+                    .selectAll("path")
+                    .data(world.features)
+                    .enter()
+                    .append("path")
+                    .attr("fill", d => {
+                        d["streams"] = datamap.get(d.properties.name)
+                        return color(d["streams"]) || "#b3b3b3" // Return generic color if no streams is found
+                    })
+                    .attr("d", path)
+                    .on("mouseover", mouseover)
+                    .on("mousemove", mousemove)
+                    .on("mouseleave", mouseleave)
+
+                // Add Legend Group
+                svg.append("g")
+                    .attr("id", "legend")
+                    .attr("transform", "translate(" + 50 + "," + 320 + ")")
+
+                // Create Legend with Colors
+                var legend = d3.legendColor()
+                    .labelFormat(d3.format(".2s"))
+                    .scale(color)
+
+                // Add Legend Title
+                legend.title("Highest Num of Streams:")
+
+                // Add Legend
+                svg.select("#legend")
+                    .call(legend)
+            }
+
+            ////  Line Chart  //////////////////////////////////////////////////////////////////
+            function createLineChart(lineChartData,selectedRegion) {
+
+                // Filter by Region
+                lineChartData = lineChartData.filter(function(d) {
+                    return d.region === selectedRegion
+                })
+
+                // Add Chart Title
+                lineChartSvg.append("text")
+                    .text("Average Normalized Feature Values over Time")
+                    .attr("class", "title")
+                    .attr("x", 50)
+                    .attr("y", -15)
+
+                // Create X Axis
+                var x = d3.scaleTime()
+                    .domain(d3.extent(lineChartData, function(d) { return d3.timeParse("%Y-%m-%d")(d.date) }))
+                    .range([0, width / 2 - 100])
+                lineChartSvg.append("g")
+                    .attr("transform", "translate(0," + height / 2 + ")")
+                    .call(d3.axisBottom(x)
+                        .tickValues(x.ticks().filter(function(d, i) { // Only show every 4th tick
+                            return i % 4 === 0
+                        }))
+                        .tickFormat(d3.timeFormat("%Y")))  
+                        .attr("class", "chart-text")
+
+                // Create X Axis Group
+                var x_axis = lineChartSvg.append("g")
+                    .attr("id", "x-axis-a")
+                    .attr("transform", "translate(0," + height + ")") // Flipping to the bottom
+                    .call(d3.axisBottom(x))
+
+                // Add X Axis Label
+                x_axis.append("text")
+                    .text("Year")
+                    .attr("class", "axis-text")
+                    .attr("x", 225)
+                    .attr("y", -215)
+                    .style("fill", "black")
+
+                // Max Value Observed for Y Axis
+                const max = d3.max(lineChartData, function(d){return 1.0})
+
+                // Create Y Axis
+                var y = d3.scaleLinear()
+                    .domain([0, max])
+                    .range([height / 2, 0])
+                y_axis = lineChartSvg.append("g")
+                    .call(d3.axisLeft(y))
+                    .attr("class", "chart-text")
+
+                // Add Y Axis Label
+                y_axis.append("text")
+                    .text("Value")
+                    .attr("class", "axis-text")
+                    .attr("transform", "rotate(-90)")
+                    .attr("x", -110)
+                    .attr("y", -35)
+                    .style("fill", "black")
+
+                // Create Group for Lines
+                var linesElement = lineChartSvg.append("g")
+                    .attr("id", "lines")
+
+                // Set Color Gradient: From [4]
+                // To Use, Write: "url(#line-gradient)"
+                /* lineChartSvg.append("linearGradient")
+                .attr("id", "line-gradient")
+                .attr("gradientUnits", "userSpaceOnUse")
+                .attr("x1", 0)
+                .attr("y1", y(0))
+                .attr("x2", 0)
+                .attr("y2", y(max))
+                .selectAll("stop")
+                    .data([
+                    {offset: "0%", color: "lightpurple"}, // Previously lightpurple
+                    {offset: "100%", color: "rgb(116, 196, 118)"} // Previously lightgreen
+                    ])
+                .enter()
+                    .append("stop")
+                    .attr("offset", function(d) { return d.offset })
+                    .attr("stop-color", function(d) { return d.color }) */
+                
+                // Set Color Scheme, Colors from [18]
+                var unused_color_set = ["#F05039", "#E57A77", "#EEBAB4", "lightslategrey", "#3D65A5",
+                    "#7CA1CC", "#A8B6CC"]
+                // var colors = ["#E57A77", "#3D65A5", "grey"]
+                var colors = ["#993404", "#fe9929", "grey"]
+
+                // Create Labels for Series
+                seriesLabels = ["Avg Loudness", "Avg Speechiness", "Avg Acousticness"]
+
+                // Create Lines and Labels
+                for (let i in seriesLabels) {
+                    var line = linesElement // Lines
+                        .append("path")
+                        .datum(lineChartData)
+                        .attr("d", d3.line()
+                        .x(d => { return x(d3.timeParse("%Y-%m-%d")(d.date)) })
+                        .y(d => { const yValue = y(d[seriesLabels[i]])
+                            return yValue}))
+                        .attr("class", "line")
+                        .attr("id", "line-number-" + i)
+                        .attr("stroke-width", 3)
+                        .style("fill","none")
+                        .style("stroke", colors[i])
+                        .style("stroke-dasharray", ("3, 3"))
+                        .on("mouseover", function () {
+                            d3.select(this).style("stroke-dasharray", null)
+                        })
+                        .on("mouseout", function () {
+                            d3.select(this).style("stroke-dasharray", ("3, 3"))
+                        })
+                    
+                    linesElement // Line Text Labels
+                        .append("text")
+                        .datum(lineChartData)
+                        .text(seriesLabels[i])
+                        .attr("x", 382)
+                        .attr("y", function (d) {
+                                return y(d[d.length - 1][seriesLabels[i]]) + 2
+                            })
+                        .attr("class", "line-label-text") 
+                        .style("fill", "black")
+                        .on("mouseover", function () {
+                            var thisLineNumber = "#line-number-" + i
+                            d3.select(thisLineNumber).style("stroke-dasharray", null)
+                        })
+                        .on("mouseout", function () {
+                            var thisLineNumber = "#line-number-" + i
+                            d3.select(thisLineNumber).style("stroke-dasharray", ("3, 3"))
+                        })
+
+                    /* linesElement // Line Circle Labels
+                        .append("g")
+                        .append("circle")
+                        .attr("fill", colors[i])
+                        .attr("r", 5)
+                        .attr("cx", 410)
+                        .attr("cy", d => { return y(d[seriesLabels[i]]) })
+                        .on("mouseover", function () {
+                            var thisLineNumber = "#line-number-" + i
+                            d3.select(thisLineNumber).style("stroke-dasharray", null)
+                        })
+                        .on("mouseout", function () {
+                            var thisLineNumber = "#line-number-" + i
+                            d3.select(thisLineNumber).style("stroke-dasharray", ("3, 3"))
+                        }) */
+                }
+            }
+
+            ////  Bar Chart  //////////////////////////////////////////////////////////////////
+            // Based on [3]
+            function createBarChart(barChartData, selectedRegion) {
+
+                // Filter by Region
+                barChartData = barChartData.filter(function (d) {
+                    return d.region === selectedRegion
+                })
+
+                // Add Chart Title
+                barChartSvg.append("text")
+                    .text("Feature Importance using MDI")
+                    .attr("class", "title")
+                    .attr("x", width / 4 - 170)
+                    .attr("y", -15)
+
+                // Create Y Axis
+                var y = d3.scaleBand()
+                    .range([0, height / 2])
+                    .domain(barChartData.map(function (d) { return d.song_feature }))
+                    .padding(0.2)
+
+                // Create Y Axis Group
+                var y_axis = barChartSvg.append("g")
+                    .attr("id", "y-axis-a")
+                    .call(d3.axisLeft(y))
+                    .attr("class", "chart-text")
+
+                // Add Y Axis Label
+                y_axis.append("text")
+                    .text("Feature")
+                    .attr("class", "axis-text")
+                    .attr("transform", "rotate(-90)")
+                    .attr("x", -100)
+                    .attr("y", -90)
+                    .style("fill", "black")
+
+                // Create X Axis
+                var maxValue = d3.max(barChartData, function (d) { return d.value }) * 1.05 // Max value of X plus a buffer of 0.05
+                var x = d3.scaleLinear()
+                    .domain([0, maxValue])
+                    .range([0, width / 2 - 80])
+
+                // Add X Axis
+                var x_axis = barChartSvg.append("g")
+                    .call(d3.axisBottom(x))
+                    .attr("class", "chart-text")
+                    .attr("transform", "translate(0," + height / 2 + ")")
+
+                // Add X Axis Label
+                x_axis.append("text")
+                    .text("Mean Decrease in Impurity")
+                    .attr("class", "axis-text")
+                    .attr("x", width / 4 - 65)
+                    .attr("y", 35)
+                    .style("fill", "black")
+
+                // Create Bars
+                barChartSvg.selectAll("mybar")
+                    .data(barChartData)
+                    .enter()
+                    .append("rect")
+                    .attr("x", 0)
+                    .attr("y", function (d) { return y(d.song_feature) })
+                    .attr("width", function (d) { return x(d.value) })
+                    .attr("height", y.bandwidth())
+                    .attr("fill", "#d95f0e")
+                    .on("mouseover", function () {
+                        d3.select(this).attr("fill", "#fe9929")
+                    })
+                    .on("mouseout", function () {
+                        d3.select(this).attr("fill", "#d95f0e")
+                    })
+            }
+
+            ////  Table  //////////////////////////////////////////////////////////////////
+            // Based on [2]
+            function createTable(tableData, selectedRegion) {
+
+                // Create Table Element
+                table = d3.select('#table').append('table')
+                            .style("border-collapse", "collapse")
+                            .style("border", "0px black solid")
+                            .style("width", "1099px") // TODO: Pass in choropleth_width
+
+                // Add a Centered Table Title Row
+                var captionRow = table.append("thead")
+                    .append("tr")
+                    .attr("id", "table-title-row")
+
+                captionRow.append("th")
+                    .attr("colspan", tableData[0].length)
+                    .attr("id", "table-title")
+                    .style("text-align", "center")
+                    .text("Ideal Song and Top 5 Songs in This Region")
+
+                // Create Header Row
+                table.append("thead")
+                    .append("tr")
+                    .selectAll("th")
+                    .data(tableData[0])
+                    .enter()
+                    .append("th")
+                    .style("background-color", "rgb(179, 179, 179)")
+                    .text(d => d)
+
+                // Filter by Region
+                tableData = tableData.slice(1).filter(function (row) {
+                    return row[tableData[0].indexOf('region')] === selectedRegion
+                })
+
+                // Create Non-header Table Rows
+                var tbody = table.append("tbody")
+
+                // Create First Row of Ideal Songs
+                tbody.append("tr")
+                    .selectAll("td")
+                    .data(tableData[0])
+                    .enter()
+                    .append("td")
+                    .style("background-color", "#fe9929")
+                    .on("mouseover", function(){
+                        d3.select(this).style("background-color", "#fed98e")
+                    })
+                    .on("mouseout", function(){
+                        d3.select(this).style("background-color", "#fe9929")
+                    })
+                    .text(d => d)
+                    .style("font-size", "12px")
+
+                // Add Subsequent Rows
+                tbody.selectAll("tr")
+                    .data(tableData.slice(0))
+                    .enter()
+                    .append("tr")
+                    .selectAll("td")
+                    .data(d => d)
+                    .enter()
+                    .append("td")
+                    .style("background-color", "#fdfdfd")
+                    .on("mouseover", function(){
+                        d3.select(this).style("background-color", "#fed98e")
+                    })
+                    .on("mouseout", function(){
+                        d3.select(this).style("background-color", "#fdfdfd")
+                    })
+                    .text(d => d)
+                    .style("font-size", "12px")
+            }
+
+            ////  Generate Prediction  //////////////////////////////////////////////////////////////////
+            // Non-Async Function to Use as Update Function on Event Listener
+            function updatePrediction(region) {
+
+                // Set Value to 0 if None Entered
+                const danceability = document.getElementById('danceability').value || 0
+                const energy = document.getElementById('energy').value || 0
+                const key = document.getElementById('key').value || 0
+                const loudness = document.getElementById('loudness').value || 0
+                const mode = document.getElementById('mode').value || 0
+                const speechiness = document.getElementById('speechiness').value || 0
+                const acousticness = document.getElementById('acousticness').value || 0
+                const instrumentalness = document.getElementById('instrumentalness').value || 0
+                const liveness = document.getElementById('liveness').value || 0
+                const valence = document.getElementById('valence').value || 0
+                const tempo = document.getElementById('tempo').value || 0
+                const time_signature = document.getElementById('time_signature').value || 0
+
+                // Call Prediction Function
+                predictSongSuccess(region, danceability, energy, key, loudness, mode, speechiness, acousticness, instrumentalness, liveness, valence, tempo, time_signature)
+            }
+
+            // Async Function to Call API
+            async function predictSongSuccess(region, danceability, energy, key, loudness, mode, speechiness, acousticness, instrumentalness, liveness, valence, tempo, time_signature) {
+                
+                // Match Region Names to API
+                old_region_name = region
+                if (region === "Africa / Middle East") {
+                    old_region_name = "Africa / Middle East"
+                    region = "Africa/Middle East"
+                } else if (region === "Asia / Australia") {
+                    old_region_name = "Asia / Australia"
+                    region = "Asia"
+                }
+
+                // Set Default to 0%
+                let prediction = 0
+
+                // Handle Response
+                async function handleResponse(response) {
+                    try {
+                        // Ensure Response Received
+                        if (response.ok) {
+                            const jsonResponse = await response.json()
+
+                            // Ensure Region is Defined
+                            if (jsonResponse && jsonResponse[region] !== undefined) {
+
+                                // Filter for Region and Format Number
+                                prediction = jsonResponse[region] * 100
+                                prediction = prediction.toFixed(2)
+
+                                // If All Features 0, Return 0
+                                let allValuesAreZero = payload.features.every(feature => parseFloat(feature) === 0)
+                                if (allValuesAreZero) {
+                                    prediction = 0
+                                }
+
+                                // Update Percentage Displayed
+                                const outputElement = document.getElementById('output')
+                                outputElement.innerHTML = `<strong>Predicted Success for ${old_region_name}:</strong><br>${prediction}%`
+
+                            // Notify Region is Undefined
+                            } else {
+                                console.error(`Error: Missing or undefined "${region}" property in JSON response.`, jsonResponse)
+                            }
+
+                        // Notify No Response Received
+                        } else {
+                            console.error('Error: Server returned an error status:', response.status)
+                        }
+
+                    // Notify JSON Not Parsed
+                    } catch (error) {
+                        console.error('Error parsing JSON:', error)
+                    }
+
+                    // Return Updated Data
+                    return prediction
+                }
+
+                // Sample Payload (Not Used)
+                const samplePayload = {"features": [0.774, 0.507, 1.0, -6.952, 0.0, 0.065, 0.0636, 0.0, 0.138, 0.508, 140.067, 4.0]}
+
+
+                // Payload for the API request
+                const payload = {"features": [danceability, energy, key, loudness, mode, speechiness, acousticness, instrumentalness, liveness, valence, tempo, time_signature]}
+
+                // URL for CORS-enabled API
+                const url = 'https://cse6242-spotify.onrender.com/predict'
+
+                // Attempt POST Request
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json',},
+                        body: JSON.stringify(payload),
+                    })
+
+                    // Handle Response
+                    const updatedprediction = await handleResponse(response)
+
+                // Notify if POST Request Unsuccessful 
+                } catch (error) {
+                    console.error('Error:', error)
+                }
+            }
+
+        </script>
+    </body>
+</html>
+
+<!-- Sources:
+    [1] stackoverflow.com/questions/628301/the-border-radius-property-and-border-collapsecollapse-dont-mix-how-can-i-use
+    [2] codepen.io/blackjacques/pen/RYVpKZ
+    [3] d3-graph-gallery.com/graph/barplot_ordered.html
+    [4] d3-graph-gallery.com/graph/line_color_gradient_svg.html
+    [5] observablehq.com/@d3/color-schemes -- For color scheme info.
+    [6] observablehq.com/@d3/quantile-quantize-and-threshold-scales -- For using scaleQuantile.
+    [7] d3-graph-gallery.com/graph/choropleth_basic.html -- For an example of a choropleth.
+    [8] dataviz.unhcr.org/tools/d3/d3_choropleth_map.html -- For an example of a choropleth legend.
+    [9] d3-graph-gallery.com/graph/line_select.html -- For an example of a dropdown.
+    [10] codepen.io/tarsusi/pen/reovOV -- For an example of a dropdown.
+    [11] stackoverflow.com/questions/61205390/how-can-i-fix-the-devtools-failed-to-load-sourcemap-could-not-load-content-er -- For js library issues.
+    [12] d3-graph-gallery.com/graph/interactivity_tooltip.html -- For an example of a tooltip.
+    [13] stackoverflow.com/questions/41646689/line-break-for-d3-circle-title-tooltiptext -- For fixing newline problem.
+    [14] tutorialrepublic.com/faq/how-to-remove-empty-elements-from-an-array-in-javascript.php -- For removing empty elements.
+    [15] d3-legend.susielu.com/#color-threshold -- For legend color information.
+    [16] stackoverflow.com/questions/22452112/nvd3-clear-svg-before-loading-new-chart -- For clearning svg.
+    [17] My previous d3 hw assignments in CSE6242.
+    [18] datylon.com/blog/data-visualization-for-colorblind-readers -- For potential color scheme
+-->

@@ -1,0 +1,30 @@
+VISUALIATION NOTES
+
+Choropleth Component
+- Main Component 
+- Dropdown by Region
+    - 'South America': ['Argentina', 'Brazil', 'Colombia', 'Bolivia', 'Chile', 'Paraguay', 'Peru', 'Uruguay', 'Ecuador'],
+    - 'North America': ['Canada', 'Costa Rica', 'Dominican Republic', 'El Salvador', 'Guatemala', 'Honduras', 'Mexico', 'Nicaragua', 'Panama', 'United States'],
+    - 'Western Europe': ['Belgium','Denmark','Finland', 'France', 'Germany', 'Iceland', 'Ireland', 'Italy', 'Netherlands', 'Norway', 'Luxembourg', 'Spain', 'Sweden', 'Switzerland', 'United Kingdom', 'Andorra'],
+    - 'Eastern Europe': ['Austria','Bulgaria', 'Czech Republic', 'Estonia', 'Greece', 'Hungary', 'Latvia', 'Lithuania', 'Poland', 'Slovakia', 'Romania','Russia', 'Ukraine'],
+    - 'Africa / Middle East': ['Turkey', 'Egypt', 'Israel','Morocco', 'Saudi Arabia', 'South Africa', 'United Arab Emirates'],
+    - 'Asia': ['Australia', 'Hong Kong', 'Indonesia', 'Japan', 'Malaysia', 'New Zealand', 'Philippines', 'Singapore', 'Taiwan', 'Thailand', 'Vietnam', 'India','South Korea']
+
+Bar Chart
+- Feature Importance using MDI (Range from 0.00 to about 0.12)
+    - Danceability
+    - Energy
+    - Key
+    - Loudness
+    - Mode
+    - Speechiness
+    - Acousticness
+    - Instrumentalness
+    - Liveliness
+    - Valence
+    - Tempo
+    - Duration in ms
+    - Time Signature
+
+Line Chart
+- Value of Each Feature Over Years 2017-2021

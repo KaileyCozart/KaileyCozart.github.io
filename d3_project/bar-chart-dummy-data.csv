@@ -1,0 +1,27 @@
+song_feature,value,region
+Danceability,0.03,Eastern Europe
+Energy,0.02,Eastern Europe
+Key,0.08,Eastern Europe
+Loudness,0.12,Eastern Europe
+Mode,0.11,Eastern Europe
+Speechiness,0.08,Eastern Europe
+Acousticness,0.07,Eastern Europe
+Instrumentalness,0.04,Eastern Europe
+Liveliness,0.05,Eastern Europe
+Valence,0.03,Eastern Europe
+Tempo,0.04,Eastern Europe
+Duration in ms,0.01,Eastern Europe
+Time Signature,0.09,Eastern Europe
+Danceability,0.05,North America
+Energy,0.01,North America
+Key,0.04,North America
+Loudness,0.11,North America
+Mode,0.12,North America
+Speechiness,0.10,North America
+Acousticness,0.08,North America
+Instrumentalness,0.05,North America
+Liveliness,0.05,North America
+Valence,0.02,North America
+Tempo,0.02,North America
+Duration in ms,0.01,North America
+Time Signature,0.07,North America

@@ -29,7 +29,66 @@
         <style>
             /* Encompassing CSS */
             body, svg {
-                background-color: #1e3504;
+                background-color: #222;
+            }
+
+            /* Navbar CSS */
+            #navbar {
+                font-family: sans-serif;
+                padding: 15px;
+                position: fixed;
+                top: 0;
+                width: 100%;
+                z-index: 1000;
+                transition: background-color 0.3s;
+            }
+
+            #navbar a {
+                color: white;
+                padding: 14px 16px;
+                text-decoration: none;
+                font-size: 16px;
+                transition: color 0.3s;
+            }
+
+            #navbar a:hover {
+                color: rgb(190, 201, 145);
+            }
+
+            .initial-nav {
+                background-color: #333;
+            }
+
+            .sticky {
+                background-color: #222;
+            }
+
+            .dropdown {
+                display: inline-block;
+            }
+
+            .dropdown-content {
+                display: none;
+                position: absolute;
+                background-color: #333;
+                min-width: 160px;
+                box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+                z-index: 1;
+            }
+
+            .dropdown-content a {
+                color: white;
+                padding: 12px 16px;
+                display: block;
+                text-decoration: none;
+            }
+
+            .dropdown-content a:hover {
+                background-color: #555;
+            }
+
+            .dropdown:hover .dropdown-content {
+                display: block;
             }
 
             /* Hero Div Component */
@@ -38,25 +97,15 @@
             }
 
             .heroDiv {
-                height: 400px;
+                height: 600px;
                 width: 100%;
-                background: url(images/hero-photo.jpg) no-repeat center center fixed;
+                background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(images/hero-photo.jpg) no-repeat center center fixed;
                     -webkit-background-size: cover;
                     -moz-background-size: cover;
                     -o-background-size: cover;
                     background-size: cover;
                 padding-top: 100px;
                 text-align: center;
-            }
-
-            .heroDiv::before { /* Color Overlay */
-                content: "";
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 500px; /* Div's height + padding-top */
-                background-color: rgba(229, 235, 223, 0.514);
             }
  
             @font-face { /* [1] Special Font */
@@ -67,19 +116,46 @@
                     url(showtime_font/Showtime-Regular.ttf) format('ttf');
             }
 
-            .fancyText {
+            .fancyTextSmall, .fancyText {
                 position: relative;
                 z-index: 1;
+                color: white;
+            }
+
+            .fancyTextSmall {
+                font-family: sans-serif;
+                font-size: 25px;
+                padding-top: 150px;
+            }
+
+            .fancyText {
                 font-family: showtime;
-                font-weight: bold;
-                color: black;
+                color: white;
                 font-size: 100px;
                 margin-top: 0px;
-                padding-top: 80px;
+            }
+
+            .hero-button {
+                display: inline-block;
+                padding: 12px 24px;
+                font-size: 16px;
+                font-weight: bold;
+                text-align: center;
+                text-decoration: none;
+                cursor: pointer;
+                border: none;
+                border-radius: 5px;
+                transition: background-color 0.3s, color 0.3s;
+                background-color: #333;
+                color: #fff;
+            }
+
+            .hero-button:hover {
+                background-color: #222;
             }
 
             /* Shared Component CSS */
-            #master-content-div {
+            #kaileys-stats {
                 width: 1099px;
                 margin: auto;
                 padding-top: 30px;
@@ -181,10 +257,23 @@
 
     <body>
         <!-- HTML Elements -->
-        <div class="heroDiv">
-            <h1 class="fancyText">&lt;Kailey's Portfolio /&gt;</h1>
+        <div id="navbar" class="initial-nav">
+            <a href="#" class="active">Home</a>
+            <a href="#kaileys-stats">My Stats</a>
+            <div class="dropdown">
+                <a href="#">Sample Projects</a>
+                <div class="dropdown-content">
+                    <a href="d3_project/index.html" target="_blank">D3 Data Analytics Project</a>
+                    <a href="https://link.springer.com/chapter/10.1007/978-3-030-36687-2_68" target="_blank">Complex Networks Publication</a>
+                </div>
+            </div>
         </div>
-        <div id="master-content-div">
+        <div class="heroDiv">
+            <h3 class="fancyTextSmall">Hi! My name is</h1>
+            <h1 class="fancyText">Kailey Cozart</h1>
+            <a href="#kaileys-stats"><button class="hero-button">My Stats</button></a>
+        </div>
+        <div id="kaileys-stats">
             <div id="line-chart" class="container"></div>
             <div id="bar-chart" class="container"></div>
             <div id="bubble-chart" class="container"></div>
@@ -200,7 +289,7 @@
 
             ////  Bubble Chart  //////////////////////////////////////////////////////////////////
             // File to be Loaded for Bubble Chart
-            var bubbleChartProm = d3.csv("bubble-chart-data.csv")
+            var bubbleChartProm = d3.csv("bubble-chart-data-2.csv")
 
             ////  Line Chart  //////////////////////////////////////////////////////////////////
             // Create Line Chart Container
@@ -255,7 +344,7 @@
                 bubbleChartData = data[0].map(function(d) {
                     return {
                         name: d.name,
-                        value: +d.value / 10 - 35 // Read values as numbers, re-size values for bubbles
+                        value: +d.value * 8 // / 10 - 35 // Read values as numbers, re-size values for bubbles
                     }
                 })
 
@@ -288,16 +377,16 @@
 
                 // Add Chart Title
                 bubbleChartSvg.append("text")
-                    .text("Coursework Taken - Weighted by Couse Number")
+                    .text("Work Experience Weighted by Hours Worked")
                     .attr("class", "title")
                     .attr("x", width / 2 - 100)
                     .attr("y", 30)
 
                 // [3] Create Simulation
                 var simulation = d3.forceSimulation(bubbleChartData)
-                    .force("center", d3.forceCenter(bubbleContainerWidth / 2 - 100, bubbleContainerHeight / 2 + 25)) // Force center of simulation to be in the middle of the div
+                    .force("center", d3.forceCenter(bubbleContainerWidth / 2, bubbleContainerHeight / 2 + 25)) // Force center of simulation to be in the middle of the div
                     .force("collide", d3.forceCollide().radius(function(d) { return d.value + 2 })) // Force the bubbles to be near eachother with "+ n" pixels in between
-                    .force("x", d3.forceX().strength(0.03).x(function(d) { return (d.value * 7) - 1050})) // Pull bubbles' x coordinate in the direction of the center
+                    .force("x", d3.forceX().strength(0.03).x(function(d) { return bubbleContainerWidth / 2})) // Pull bubbles' x coordinate in the direction of the center
                     .force("y", d3.forceY().strength(0.03).y(function(d) { return bubbleContainerHeight / 2 })) // Pull bubbles' y coordinate in the direction of the center
 
                 // [3] Create Bubbles
@@ -585,6 +674,16 @@
                     .style("font-size", "12px")
             }
 
+        </script>
+        <script>
+            window.onscroll = function() {
+                var navbar = document.getElementById('navbar');
+                if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                    navbar.classList.add('sticky');
+                } else {
+                    navbar.classList.remove('sticky');
+                }
+            };
         </script>
     </body>
 </html>
