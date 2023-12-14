@@ -21,9 +21,11 @@
         <title>Kailey's Portfolio</title>
 
         <!-- D3 JS Library -->
-        <script type="text/javascript" src="d3.v5.min.js"></script>
+        <!--script type="text/javascript" src="d3.v5.min.js"></script>
         <script type="text/javascript" src="d3-dsv.min.js"></script>
-        <script type="text/javascript" src="d3-tip.min.js"></script>
+        <script type="text/javascript" src="d3-tip.min.js"></script-->
+        <script type="text/javascript" src="d3.min.js"></script>
+        <script type="text/javascript" src="plot.min.js"></script>
         
         <!-- CSS -->
         <style>
@@ -204,52 +206,21 @@
                 margin-left: 5px;
             }
 
-            /* Table Component */
-            table {
-                margin-bottom: 30px;
-            }
-
-            #table-title {
-                font-size: 15px;
-                font-weight: bold;
-            }
-
-            td,th {
-                font-family: sans-serif;
-            }
-            
-            th {
-                font-size: 14px;
-                text-transform: capitalize;
-                border: 0px black solid;
-                padding: 5px;
-                padding-left: 10px;
+            .plot-d6a7b5 {
                 background-color: white;
-                font-weight: normal;
-                text-align: left;
             }
 
-            td {
-                border: 0px black solid;
-                padding: 5px;
-                padding-left: 10px;
-                line-height: 1.15
+            #tidy-tree {
+                padding-bottom: 30px;
+                margin-bottom: 30px;
+                background-color: white;
+                border-radius: 8px;
             }
 
-            #table-title-row th:first-child { /* CSS to Round Top Left Corner */
-            border-top-left-radius: 6px;
-            }
-
-            #table-title-row th:last-child { /* CSS to Round Top Right Corner */
-            border-top-right-radius: 6px;
-            }
-
-            table tr:last-child td:first-child { /* [2] CSS to Bottom Left Corner */
-            border-bottom-left-radius: 6px;
-            }
-
-            table tr:last-child td:last-child { /* [2] CSS to Bottom Right Corner */
-            border-bottom-right-radius: 6px;
+            .tree-title {
+                text-align: center;
+                font-family: sans-serif;
+                font-weight: bold;
             }
 
         </style>
@@ -274,9 +245,10 @@
             <a href="#kaileys-stats"><button class="hero-button">My Stats</button></a>
         </div>
         <div id="kaileys-stats">
-            <div id="line-chart" class="container"></div>
-            <div id="bar-chart" class="container"></div>
+            <!--div id="line-chart" class="container"></div0-->
             <div id="bubble-chart" class="container"></div>
+            <div id="bar-chart" class="container"></div>
+            <div id="tidy-tree" class="container"></div>   
             <div id="table" class="container"></div>   
         </div>
 
@@ -290,21 +262,17 @@
             ////  Bubble Chart  //////////////////////////////////////////////////////////////////
             // File to be Loaded for Bubble Chart
             var bubbleChartProm = d3.csv("bubble-chart-data-2.csv")
+            var bubbleContainerWidth = width + margin.left + margin.right - (width / 2)
+                var bubbleContainerHeight = height + margin.top + margin.bottom - (height/ 2 ) + 50
+
+                // Create SVG for Chart
+                var bubbleChartSvg = d3.select("#bubble-chart")
+                    .append("svg")
+                    .attr("width", bubbleContainerWidth)
+                    .attr("height", bubbleContainerHeight)
+
 
             ////  Line Chart  //////////////////////////////////////////////////////////////////
-            // Create Line Chart Container
-            var lineChartSvgNoGroup = d3.select("#line-chart")
-                .append("svg")
-                .attr("width", width + margin.left + margin.right - (width / 2))
-                .attr("height", height + margin.top + margin.bottom - (height/ 2 ) + 50)
-
-            // Add Spacing for Line Chart within SVG
-            var moveLineChartHorizontal = 20
-            var moveLineChartVertical = 30
-
-            var lineChartSvg = lineChartSvgNoGroup.append("g") // This is split from above for dropdown changes
-                .attr("transform","translate(" + (margin.left + moveLineChartHorizontal) + "," + (margin.top + moveLineChartVertical) + ")")
-
             // File to be Loaded for Line Chart
             var lineChartProm = d3.csv("line-chart-data.csv")
             
@@ -328,10 +296,14 @@
             ////  Table  //////////////////////////////////////////////////////////////////
             // File to be Loaded for Table
             var tableProm = d3.text("table-data.csv")
+
+            ////  Tidy Tree  //////////////////////////////////////////////////////////////////
+ 
+            var tidyTreeProm = d3.json("tree-data-2.json")
             
             ////  Promises  //////////////////////////////////////////////////////////////////
             Promise.all(
-                [bubbleChartProm, lineChartProm, barChartProm, tableProm]
+                [bubbleChartProm, lineChartProm, barChartProm, tidyTreeProm, tableProm]
             ).then(
                 ready
             )
@@ -348,43 +320,86 @@
                     }
                 })
 
-                ////  Line Chart  //////////////////////////////////////////////////////////////////
-                var lineChartData = data[1]
-
                 ////  Bar Chart  //////////////////////////////////////////////////////////////////
                 var barChartData = data[2].sort(function(b, a){return a.value - b.value})
 
+                ////  Tidy Tree  //////////////////////////////////////////////////////////////////
+                tidyTreeData = data[3]
+                chaos2 = d3.stratify()(tidyTreeData)
+                root = d3.hierarchy(chaos2)
+
+                const colors = [
+                "#006400", // Dark Green
+                "#228B22", // Forest Green
+                "#32CD32", // Lime Green
+                "#3CB371", // Medium Sea Green
+                "#00FF7F"  // Spring Green
+                ]
+
+                const plot = Plot.plot({
+                    axis: null,
+                    marginTop: 10,
+                    marginBottom: 10,
+                    marginLeft: 70,
+                    marginRight: 160,
+                    width: 1100,
+                    height: 300,
+                    marks: [
+                        Plot.tree(root.descendants(), {
+                        path: (node) => node.ancestors().reverse().map(({ data: { id } }) => id).join("|"),
+                        delimiter: "|",
+                        stroke: "#333",
+                            fill: (node) => {
+                                if(node !== undefined) {
+                                    if (node.data.data.value == 0) {
+                                        return "rgb(54, 86, 62)"
+                                    } else if (node.data.data.value == 100) {
+                                        return "rgb(54, 86, 62)"
+                                    } else if (node.data.data.value == 200) {
+                                        return "rgb(54, 86, 62)"
+                                    } else if (node.data.data.value == 300) {
+                                        return "rgb(54, 86, 62)"
+                                    } else if (node.data.data.value == 400) {
+                                        return "rgb(54, 86, 62)"
+                                    } else if (node.data.data.value == 500) {
+                                        return "#d95f0e"
+                                    } else if (node.data.data.value == 600) {
+                                        return "#d95f0e"
+                                    }
+                                }
+                                return "#333" 
+                            }
+                        })
+                    ]
+                })
+
+                tidy_tree = document.querySelector("#tidy-tree")
+                textToAdd = document.createElement("p")
+                textToAdd.innerHTML = "Major-Specific Undergraduate Coursework"
+                textToAdd.classList.add("tree-title")
+                tidy_tree.appendChild(textToAdd)
+                tidy_tree.append(plot)
+
                 ////  Table  //////////////////////////////////////////////////////////////////
-                var tableData  = d3.csvParseRows(data[3])
+                var tableData  = d3.csvParseRows(data[4])
 
                 // Initial Render of All Components
                 createBubbleChart(bubbleChartData)
-                createLineChart(lineChartData)
                 createBarChart(barChartData)
-                createTable(tableData)
             }
 
             ////  Bubble Chart  //////////////////////////////////////////////////////////////////
             function createBubbleChart(bubbleChartData) {
-                var bubbleContainerWidth = 1100
-                var bubbleContainerHeight = 500
-
-                // Create SVG for Chart
-                var bubbleChartSvg = d3.select("#bubble-chart")
-                    .append("svg")
-                    .attr("width", bubbleContainerWidth)
-                    .attr("height", bubbleContainerHeight)
-
                 // Add Chart Title
                 bubbleChartSvg.append("text")
                     .text("Work Experience Weighted by Hours Worked")
                     .attr("class", "title")
-                    .attr("x", width / 2 - 100)
+                    .attr("x", width / 2 - 350)
                     .attr("y", 30)
 
                 // [3] Create Simulation
                 var simulation = d3.forceSimulation(bubbleChartData)
-                    .force("center", d3.forceCenter(bubbleContainerWidth / 2, bubbleContainerHeight / 2 + 25)) // Force center of simulation to be in the middle of the div
+                    .force("center", d3.forceCenter(bubbleContainerWidth / 2, bubbleContainerHeight / 2)) // Force center of simulation to be in the middle of the div
                     .force("collide", d3.forceCollide().radius(function(d) { return d.value + 2 })) // Force the bubbles to be near eachother with "+ n" pixels in between
                     .force("x", d3.forceX().strength(0.03).x(function(d) { return bubbleContainerWidth / 2})) // Pull bubbles' x coordinate in the direction of the center
                     .force("y", d3.forceY().strength(0.03).y(function(d) { return bubbleContainerHeight / 2 })) // Pull bubbles' y coordinate in the direction of the center
@@ -398,12 +413,12 @@
 
                 bubbles.append("circle")
                     .attr("r", function(d) { return d.value}) // Radius is the number in the value column of our csv
-                    .style("fill", "#bec991") // Bubble color
+                    .style("fill", "rgb(54, 86, 62)") // Bubble color
                     .on("mouseover", function () {
-                        d3.select(this).style("fill", "rgb(144, 115, 80)")
+                        d3.select(this).style("fill", "#bec991")
                     })
                     .on("mouseout", function () {
-                        d3.select(this).style("fill", "#bec991")
+                        d3.select(this).style("fill", "rgb(54, 86, 62)")
                     })
 
                 // [3] Create Bubble Labels
@@ -418,136 +433,6 @@
                         return "translate(" + Math.max(d.value, Math.min(bubbleContainerWidth - d.value, d.x)) + "," 
                         + Math.max(d.value, Math.min(bubbleContainerHeight - d.value, d.y)) + ")" })
                 })
-            }
-
-            ////  Line Chart  //////////////////////////////////////////////////////////////////
-            function createLineChart(lineChartData) {
-
-                // Add Chart Title
-                lineChartSvg.append("text")
-                    .text("Degree Completion over Time")
-                    .attr("class", "title")
-                    .attr("x", 90)
-                    .attr("y", -15)
-
-                // Create X Axis
-                var x = d3.scaleTime()
-                    .domain(d3.extent(lineChartData, function(d) { return d3.timeParse("%Y-%m-%d")(d.date) }))
-                    .range([0, width / 2 - 100])
-                
-                lineChartSvg.append("g")
-                    .attr("transform", "translate(0," + height / 2 + ")")
-                    .call(d3.axisBottom(x)
-                        .tickValues(x.ticks().filter(function(d, i) { // Only show every nth tick
-                            return i % 1 === 0
-                        }))
-                        .tickFormat(d3.timeFormat("%Y")))  
-                        .attr("class", "chart-text")
-
-                // Create X Axis Group
-                var x_axis = lineChartSvg.append("g")
-                    .attr("id", "x-axis-a")
-                    .attr("transform", "translate(0," + height + ")") // Flipping to the bottom
-                    .call(d3.axisBottom(x))
-
-                // Add X Axis Label
-                x_axis.append("text")
-                    .text("Year")
-                    .attr("class", "axis-text")
-                    .attr("x", 185)
-                    .attr("y", -215)
-                    .style("fill", "black")
-
-                // Max Value Observed for Y Axis
-                const max = 100
-
-                // Create Y Axis
-                var y = d3.scaleLinear()
-                    .domain([0, max])
-                    .range([height / 2, 0])
-                y_axis = lineChartSvg.append("g")
-                    .call(d3.axisLeft(y))
-                    .attr("class", "chart-text")
-
-                // Add Y Axis Label
-                y_axis.append("text")
-                    .text("Percentage Complete")
-                    .attr("class", "axis-text")
-                    .attr("transform", "rotate(-90)")
-                    .attr("x", -60)
-                    .attr("y", -35)
-                    .style("fill", "black")
-
-                // Create Group for Lines
-                var linesElement = lineChartSvg.append("g")
-                    .attr("id", "lines")
-
-                // Set Color Gradient: From [4]
-                // To Use, Write: "url(#line-gradient)"
-                /* lineChartSvg.append("linearGradient")
-                .attr("id", "line-gradient")
-                .attr("gradientUnits", "userSpaceOnUse")
-                .attr("x1", 0)
-                .attr("y1", y(0))
-                .attr("x2", 0)
-                .attr("y2", y(max))
-                .selectAll("stop")
-                    .data([
-                    {offset: "0%", color: "lightpurple"}, // Previously lightpurple
-                    {offset: "100%", color: "rgb(116, 196, 118)"} // Previously lightgreen
-                    ])
-                .enter()
-                    .append("stop")
-                    .attr("offset", function(d) { return d.offset })
-                    .attr("stop-color", function(d) { return d.color }) */
-                
-                // Create Line Colors for Series
-                var colors = ["#36563e", "#907350"]
-
-                // Create Labels for Series
-                seriesLabels = ["BA Comp Sci", "MS Comp Sci"]
-
-                // Create Lines and Labels
-                for (let i in seriesLabels) {
-                    var line = linesElement // Lines
-                        .append("path")
-                        .datum(lineChartData)
-                        .attr("d", d3.line()
-                        .x(d => { return x(d3.timeParse("%Y-%m-%d")(d.date)) })
-                        .y(d => { const yValue = y(d[seriesLabels[i]])
-                            return yValue}))
-                        .attr("class", "line")
-                        .attr("id", "line-number-" + i)
-                        .attr("stroke-width", 3)
-                        .style("fill","none")
-                        .style("stroke", colors[i])
-                        .style("stroke-dasharray", ("3, 3"))
-                        .on("mouseover", function () {
-                            d3.select(this).style("stroke-dasharray", null)
-                        })
-                        .on("mouseout", function () {
-                            d3.select(this).style("stroke-dasharray", ("3, 3"))
-                        })
-                    
-                    linesElement // Line Text Labels
-                        .append("text")
-                        .datum(lineChartData)
-                        .text(seriesLabels[i])
-                        .attr("x", 382)
-                        .attr("y", function (d) {
-                                return y(d[d.length - 1][seriesLabels[i]]) + 2
-                            })
-                        .attr("class", "line-label-text") 
-                        .style("fill", "black")
-                        .on("mouseover", function () {
-                            var thisLineNumber = "#line-number-" + i
-                            d3.select(thisLineNumber).style("stroke-dasharray", null)
-                        })
-                        .on("mouseout", function () {
-                            var thisLineNumber = "#line-number-" + i
-                            d3.select(thisLineNumber).style("stroke-dasharray", ("3, 3"))
-                        })
-                }
             }
 
             ////  Bar Chart  //////////////////////////////////////////////////////////////////
@@ -620,70 +505,18 @@
                     })
             }
 
-            ////  Table  //////////////////////////////////////////////////////////////////
-            // Based on [5]
-            function createTable(tableData) {
-
-                // Create Table Element
-                table = d3.select('#table').append('table')
-                            .style("border-collapse", "collapse")
-                            .style("border", "0px black solid")
-                            .style("width", "1099px") // TODO: Pass in choropleth_width
-
-                // Add a Centered Table Title Row
-                var captionRow = table.append("thead")
-                    .append("tr")
-                    .attr("id", "table-title-row")
-
-                captionRow.append("th")
-                    .attr("colspan", tableData[0].length)
-                    .attr("id", "table-title")
-                    .style("text-align", "center")
-                    .text("Work Experience")
-
-                // Create Header Row
-                table.append("thead")
-                    .append("tr")
-                    .selectAll("th")
-                    .data(tableData[0])
-                    .enter()
-                    .append("th")
-                    .style("background-color", "#bec991")
-                    .text(d => d)
-
-                // Create Non-header Table Rows
-                var tbody = table.append("tbody")
-
-                // Add Subsequent Rows
-                tbody.selectAll("tr")
-                    .data(tableData.slice(1))
-                    .enter()
-                    .append("tr")
-                    .selectAll("td")
-                    .data(d => d)
-                    .enter()
-                    .append("td")
-                    .style("background-color", "white")
-                    .on("mouseover", function(){
-                        d3.select(this).style("background-color", "#bec991")
-                    })
-                    .on("mouseout", function(){
-                        d3.select(this).style("background-color", "white")
-                    })
-                    .text(d => d)
-                    .style("font-size", "12px")
-            }
-
         </script>
         <script>
+
             window.onscroll = function() {
-                var navbar = document.getElementById('navbar');
+                var navbar = document.getElementById('navbar')
                 if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
-                    navbar.classList.add('sticky');
+                    navbar.classList.add('sticky')
                 } else {
-                    navbar.classList.remove('sticky');
+                    navbar.classList.remove('sticky')
                 }
-            };
+            }
+
         </script>
     </body>
 </html>
