@@ -21,17 +21,34 @@
         <title>Kailey's Portfolio</title>
 
         <!-- D3 JS Library -->
-        <!--script type="text/javascript" src="d3.v5.min.js"></script>
-        <script type="text/javascript" src="d3-dsv.min.js"></script>
-        <script type="text/javascript" src="d3-tip.min.js"></script-->
         <script type="text/javascript" src="d3.min.js"></script>
         <script type="text/javascript" src="plot.min.js"></script>
         
         <!-- CSS -->
         <style>
             /* Encompassing CSS */
+            :root {
+                --darker-color: #222;
+                --lighter-color: #333;
+                --nav-active-text-color: #bec991;
+                --nav-dropdown-hover-color: #555;
+                --component-background-color: white;
+                --bar-default-color: #bec991;
+                --bar-active-color: darkgreen;
+                --bubble-default-color: #bec991;
+                --bubble-active-color: darkgreen;
+                --tree-line-color: #bec991;
+                --tree-undergrad-color: darkgreen;
+                --tree-100-color: darkgreen;
+                --tree-200-color: darkgreen;
+                --tree-300-color: darkgreen;
+                --tree-400-color: darkgreen;
+                --tree-masters-color: darkgreen;
+                --tree-600-color: darkgreen;
+            }
+
             body, svg {
-                background-color: #222;
+                background-color: var(--darker-color);
             }
 
             /* Navbar CSS */
@@ -54,15 +71,15 @@
             }
 
             #navbar a:hover {
-                color: rgb(190, 201, 145);
+                color: var(--nav-active-text-color);
             }
 
             .initial-nav {
-                background-color: #333;
+                background-color: var(--lighter-color);
             }
 
             .sticky {
-                background-color: #222;
+                background-color: var(--darker-color);
             }
 
             .dropdown {
@@ -72,7 +89,7 @@
             .dropdown-content {
                 display: none;
                 position: absolute;
-                background-color: #333;
+                background-color: var(--lighter-color);
                 min-width: 160px;
                 box-shadow: 0 8px 16px rgba(0,0,0,0.2);
                 z-index: 1;
@@ -86,7 +103,7 @@
             }
 
             .dropdown-content a:hover {
-                background-color: #555;
+                background-color: var(--nav-dropdown-hover-color);
             }
 
             .dropdown:hover .dropdown-content {
@@ -148,12 +165,12 @@
                 border: none;
                 border-radius: 5px;
                 transition: background-color 0.3s, color 0.3s;
-                background-color: #333;
-                color: #fff;
+                background-color: var(--lighter-color);
+                color: white;
             }
 
             .hero-button:hover {
-                background-color: #222;
+                background-color: var(--darker-color);
             }
 
             /* Shared Component CSS */
@@ -164,7 +181,7 @@
             }
 
             #bubble-chart > svg, #line-chart > svg, #bar-chart > svg {
-                background-color: white;
+                background-color: var(--component-background-color);
                 border-radius: 8px;
                 margin-bottom: 1px;
             }
@@ -193,27 +210,19 @@
                 font-size: 11px;
             }
 
-            /* Line Chart Component */
-            .line-label-text {
-                font-size: 10px;
-                font-family: sans-serif;
-                letter-spacing: 0.15px;
-                font-weight: bold;
-            }
-
             /* Bar Chart Component */
             #bar-chart { 
                 margin-left: 5px;
             }
 
             .plot-d6a7b5 {
-                background-color: white;
+                background-color: var(--component-background-color);
             }
 
-            #tidy-tree {
+            #tree {
                 padding-bottom: 30px;
                 margin-bottom: 30px;
-                background-color: white;
+                background-color: var(--component-background-color);
                 border-radius: 8px;
             }
 
@@ -245,68 +254,53 @@
             <a href="#kaileys-stats"><button class="hero-button">My Stats</button></a>
         </div>
         <div id="kaileys-stats">
-            <!--div id="line-chart" class="container"></div0-->
             <div id="bubble-chart" class="container"></div>
             <div id="bar-chart" class="container"></div>
-            <div id="tidy-tree" class="container"></div>   
+            <div id="tree" class="container"></div>   
             <div id="table" class="container"></div>   
         </div>
 
-        <!-- D3 Code -->
+        <!-- D3 and Vanilla JS -->
         <script>
             // Define Dimensions for SVGs
             margin = ({top: 20, right: 30, bottom: 30, left: 40})
             var height = 500
             var width = 954
+            var genericContainerWidth = width + margin.left + margin.right - (width / 2)
+            var genericContainerHeight = height + margin.top + margin.bottom - (height/ 2 ) + 50
 
             ////  Bubble Chart  //////////////////////////////////////////////////////////////////
             // File to be Loaded for Bubble Chart
             var bubbleChartProm = d3.csv("bubble-chart-data-2.csv")
-            var bubbleContainerWidth = width + margin.left + margin.right - (width / 2)
-                var bubbleContainerHeight = height + margin.top + margin.bottom - (height/ 2 ) + 50
 
-                // Create SVG for Chart
-                var bubbleChartSvg = d3.select("#bubble-chart")
-                    .append("svg")
-                    .attr("width", bubbleContainerWidth)
-                    .attr("height", bubbleContainerHeight)
-
-
-            ////  Line Chart  //////////////////////////////////////////////////////////////////
-            // File to be Loaded for Line Chart
-            var lineChartProm = d3.csv("line-chart-data.csv")
+            // Create SVG for Chart
+            var bubbleContainerWidth = genericContainerWidth
+            var bubbleContainerHeight = genericContainerHeight
+            var bubbleChartSvg = d3.select("#bubble-chart")
+                .append("svg")
+                .attr("width", bubbleContainerWidth)
+                .attr("height", bubbleContainerHeight)
             
             ////  Bar Chart  //////////////////////////////////////////////////////////////////
-            // Create Bar Chart Container
-            var barChartSvgNoGroup = d3.select("#bar-chart")
-                .append("svg")
-                .attr("width", width + margin.left + margin.right - (width / 2))
-                .attr("height", height + margin.top + margin.bottom - (height/ 2 ) + 50)
-
-            // Add Spacing for Bar Chart within SVG
-            var moveBarChartHorizontal = 75
-            var moveBarChartVertical = 30
-
-            var barChartSvg = barChartSvgNoGroup.append("g") // This is split from above for dropdown changes
-                .attr("transform","translate(" + (margin.left + moveBarChartHorizontal) + "," + (margin.top + moveBarChartVertical) + ")")
-
             // File to be Loaded for Bar Chart
             var barChartProm = d3.csv("bar-chart-data.csv")
 
-            ////  Table  //////////////////////////////////////////////////////////////////
-            // File to be Loaded for Table
-            var tableProm = d3.text("table-data.csv")
+            // Create SVG for Chart
+            var barChartSvgNoGroup = d3.select("#bar-chart")
+                .append("svg")
+                .attr("width", genericContainerWidth)
+                .attr("height", genericContainerHeight)
+            var moveBarChartHorizontal = 75
+            var moveBarChartVertical = 30
+            var barChartSvg = barChartSvgNoGroup.append("g")
+                .attr("transform","translate(" + (margin.left + moveBarChartHorizontal) + "," + (margin.top + moveBarChartVertical) + ")")
 
-            ////  Tidy Tree  //////////////////////////////////////////////////////////////////
- 
-            var tidyTreeProm = d3.json("tree-data-2.json")
+            ////  Tree  //////////////////////////////////////////////////////////////////
+            // File to be Loaded for Tree
+            var treeProm = d3.json("tree-data-2.json")
             
             ////  Promises  //////////////////////////////////////////////////////////////////
-            Promise.all(
-                [bubbleChartProm, lineChartProm, barChartProm, tidyTreeProm, tableProm]
-            ).then(
-                ready
-            )
+            Promise.all([bubbleChartProm, barChartProm, treeProm]).then(ready)
 
             ////  Ready  //////////////////////////////////////////////////////////////////
             function ready(data) { // This is called when the data has been read
@@ -316,26 +310,29 @@
                 bubbleChartData = data[0].map(function(d) {
                     return {
                         name: d.name,
-                        value: +d.value * 8 // / 10 - 35 // Read values as numbers, re-size values for bubbles
+                        value: +d.value * 8 // Read values as numbers, re-size values for bubbles
                     }
                 })
 
                 ////  Bar Chart  //////////////////////////////////////////////////////////////////
-                var barChartData = data[2].sort(function(b, a){return a.value - b.value})
+                var barChartData = data[1].sort(function(b, a){return a.value - b.value})
 
-                ////  Tidy Tree  //////////////////////////////////////////////////////////////////
-                tidyTreeData = data[3]
-                chaos2 = d3.stratify()(tidyTreeData)
-                root = d3.hierarchy(chaos2)
+                ////  Tree  //////////////////////////////////////////////////////////////////
+                treeData = data[2]
 
-                const colors = [
-                "#006400", // Dark Green
-                "#228B22", // Forest Green
-                "#32CD32", // Lime Green
-                "#3CB371", // Medium Sea Green
-                "#00FF7F"  // Spring Green
-                ]
+                ////  Initial Render of All Components //////////////////////////////////////////////////////////////////
+                createBubbleChart(bubbleChartData)
+                createBarChart(barChartData)
+                createTree(treeData)
+            }
 
+            
+            ////  Tree  //////////////////////////////////////////////////////////////////
+            function createTree(treeData) { // References: [4][5][6][7]
+                stratifiedTreeData = d3.stratify()(treeData) // Make our data hierarchical
+                root = d3.hierarchy(stratifiedTreeData)
+
+                // Create Plot to be Appended Later
                 const plot = Plot.plot({
                     axis: null,
                     marginTop: 10,
@@ -348,44 +345,38 @@
                         Plot.tree(root.descendants(), {
                         path: (node) => node.ancestors().reverse().map(({ data: { id } }) => id).join("|"),
                         delimiter: "|",
-                        stroke: "#333",
-                            fill: (node) => {
+                        stroke: "var(--tree-line-color)",
+                            fill: (node) => { // Set fill based on level
                                 if(node !== undefined) {
                                     if (node.data.data.value == 0) {
-                                        return "rgb(54, 86, 62)"
+                                        return "var(--tree-undergrad-color)"
                                     } else if (node.data.data.value == 100) {
-                                        return "rgb(54, 86, 62)"
+                                        return "var(--tree-100-color)"
                                     } else if (node.data.data.value == 200) {
-                                        return "rgb(54, 86, 62)"
+                                        return "var(--tree-200-color)"
                                     } else if (node.data.data.value == 300) {
-                                        return "rgb(54, 86, 62)"
+                                        return "var(--tree-300-color)"
                                     } else if (node.data.data.value == 400) {
-                                        return "rgb(54, 86, 62)"
+                                        return "var(--tree-400-color)"
                                     } else if (node.data.data.value == 500) {
-                                        return "#d95f0e"
+                                        return "var(--tree-masters-color)"
                                     } else if (node.data.data.value == 600) {
-                                        return "#d95f0e"
+                                        return "var(--tree-600-color)"
                                     }
                                 }
-                                return "#333" 
+                                return "var(--lighter-color)" 
                             }
                         })
                     ]
                 })
 
-                tidy_tree = document.querySelector("#tidy-tree")
+                // Add Title to Tree
+                tidy_tree = document.querySelector("#tree")
                 textToAdd = document.createElement("p")
-                textToAdd.innerHTML = "Major-Specific Undergraduate Coursework"
+                textToAdd.innerHTML = "Major-Specific Coursework"
                 textToAdd.classList.add("tree-title")
                 tidy_tree.appendChild(textToAdd)
                 tidy_tree.append(plot)
-
-                ////  Table  //////////////////////////////////////////////////////////////////
-                var tableData  = d3.csvParseRows(data[4])
-
-                // Initial Render of All Components
-                createBubbleChart(bubbleChartData)
-                createBarChart(barChartData)
             }
 
             ////  Bubble Chart  //////////////////////////////////////////////////////////////////
@@ -397,14 +388,14 @@
                     .attr("x", width / 2 - 350)
                     .attr("y", 30)
 
-                // [3] Create Simulation
+                // [2] Create Simulation
                 var simulation = d3.forceSimulation(bubbleChartData)
                     .force("center", d3.forceCenter(bubbleContainerWidth / 2, bubbleContainerHeight / 2)) // Force center of simulation to be in the middle of the div
                     .force("collide", d3.forceCollide().radius(function(d) { return d.value + 2 })) // Force the bubbles to be near eachother with "+ n" pixels in between
                     .force("x", d3.forceX().strength(0.03).x(function(d) { return bubbleContainerWidth / 2})) // Pull bubbles' x coordinate in the direction of the center
                     .force("y", d3.forceY().strength(0.03).y(function(d) { return bubbleContainerHeight / 2 })) // Pull bubbles' y coordinate in the direction of the center
 
-                // [3] Create Bubbles
+                // [2] Create Bubbles
                 var bubbles = bubbleChartSvg.selectAll(".bubble")
                     .data(bubbleChartData)
                     .enter().append("g")
@@ -413,21 +404,21 @@
 
                 bubbles.append("circle")
                     .attr("r", function(d) { return d.value}) // Radius is the number in the value column of our csv
-                    .style("fill", "rgb(54, 86, 62)") // Bubble color
+                    .style("fill", "var(--bubble-default-color)") // Bubble color
                     .on("mouseover", function () {
-                        d3.select(this).style("fill", "#bec991")
+                        d3.select(this).style("fill", "var(--bubble-active-color)")
                     })
                     .on("mouseout", function () {
-                        d3.select(this).style("fill", "rgb(54, 86, 62)")
+                        d3.select(this).style("fill", "var(--bubble-default-color)")
                     })
 
-                // [3] Create Bubble Labels
+                // [2] Create Bubble Labels
                 bubbles.append("text")
                     .attr("dy", ".35em") // Moving the y coordinate of the label so that the label is in the center of the circle
                     .style("text-anchor", "middle") // Anchor the text in the middle of the bubble
                     .text(function(d) { return d.name }) // Label is the string value inside the name column of our csv
 
-                // [3] Start Simulation
+                // [2] Start Simulation
                 simulation.on("tick", function() {
                     bubbles.attr("transform", function(d) { 
                         return "translate(" + Math.max(d.value, Math.min(bubbleContainerWidth - d.value, d.x)) + "," 
@@ -436,7 +427,7 @@
             }
 
             ////  Bar Chart  //////////////////////////////////////////////////////////////////
-            // Based on [4]
+            // Based on [3]
             function createBarChart(barChartData) {
 
                 // Add Chart Title
@@ -496,18 +487,16 @@
                     .attr("y", function (d) { return y(d.skill) })
                     .attr("width", function (d) { return x(d.value) })
                     .attr("height", y.bandwidth())
-                    .attr("fill", "#36563e")
+                    .attr("fill", "var(--bar-default-color)")
                     .on("mouseover", function () {
-                        d3.select(this).attr("fill", "#bec991")
+                        d3.select(this).attr("fill", "var(--bar-active-color)")
                     })
                     .on("mouseout", function () {
-                        d3.select(this).attr("fill", "#36563e")
+                        d3.select(this).attr("fill", "var(--bar-default-color)")
                     })
             }
 
-        </script>
-        <script>
-
+            ////  Navbar Scroll Function  //////////////////////////////////////////////////////////////////
             window.onscroll = function() {
                 var navbar = document.getElementById('navbar')
                 if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
@@ -523,11 +512,12 @@
 
 <!-- Sources:
     [1] pixelsurplus.com/products/showtime-free-handmade-calligraphy-font -- Font for Top Div
-    [2] stackoverflow.com/questions/628301/the-border-radius-property-and-border-collapsecollapse-dont-mix-how-can-i-use -- Border Styling for Table
-    [3] d3indepth.com/force-layout/ -- For Simulation Involving Bubbles
-    [4] d3-graph-gallery.com/graph/barplot_ordered.html -- For Bar Chart Example
-    [5] codepen.io/blackjacques/pen/RYVpKZ -- For Line Chart Example
-    [6] color-hex.com/color-palette/60344, color-hex.com/color-palette/36578 -- Color Palettes
+    [2] d3indepth.com/force-layout/ -- For Simulation Involving Bubbles
+    [3] d3-graph-gallery.com/graph/barplot_ordered.html -- For Bar Chart Example
+    [4] observablehq.com/plot/getting-started -- For Using Observable Plot
+    [5] observablehq.com/@d3/d3-hierarchy -- For Tree Example
+    [6] observablehq.com/@enjalot/emotion-tree -- For Tree Example
+    [7] observablehq.com/@d3/tree-component -- For Tree Example
     [n-1] Some additional help from AI tools via Google searches and OpenAI queries. -- For all sections.
     [n] My previous d3 hw assignments in CSE6242. -- For all sections, especially promises, line charts, bar charts, and tables.
 
