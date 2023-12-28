@@ -51,6 +51,11 @@
                 background-color: var(--darker-color);
             }
 
+            h2 {
+                font-family: sans-serif;
+                font-weight: bold;
+            }
+
             /* Navbar CSS */
             #navbar {
                 font-family: sans-serif;
@@ -213,9 +218,9 @@
 
             /* Bar Chart Component */
             #bar-chart { 
-                margin-left: 5px;
             }
-
+            
+            /* margin-left: 5px; */
             .plot-d6a7b5 {
                 background-color: var(--component-background-color);
             }
@@ -239,7 +244,7 @@
                 margin-bottom: 30px;
             }
 
-            .grid {
+            .grid, #bubble-chart, #bar-chart {
                 display: grid;
                 width: 100%;
                 gap: 1rem;
@@ -248,7 +253,7 @@
             }
 
             @media (max-width: 60em) {
-                .grid {
+                .grid, #bubble-chart, #bar-chart {
                     gap: 3rem;
                 }
             }
@@ -306,7 +311,7 @@
             <a href="#" class="active">Home</a>
             <a href="#kaileys-stats">My Stats</a>
             <div class="dropdown">
-                <a href="#">Sample Projects</a>
+                <a href="#sample-projects">Sample Projects</a>
                 <div class="dropdown-content">
                     <a href="d3_project/index.html" target="_blank">D3 Data Analytics Project</a>
                     <a href="https://link.springer.com/chapter/10.1007/978-3-030-36687-2_68" target="_blank">Complex Networks Publication</a>
@@ -320,6 +325,7 @@
         </div>
         <div id="sample-projects">
             <div class="grid"> <!-- [8] -->
+                <h2>Projects</h2>
                 <div class="grid-div">
                     <div class="card"><img class="card-photos" src="images/card-photo-2.jpg">
                       <div class="card-content">
@@ -341,6 +347,7 @@
             </div>
         </div>
         <div id="kaileys-stats">
+            <h2>Stats</h2>
             <div id="bubble-chart" class="container"></div>
             <div id="bar-chart" class="container"></div>
             <div id="tree" class="container"></div>   
