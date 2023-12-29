@@ -185,7 +185,6 @@
             #kaileys-stats, #sample-projects {
                 width: 1099px;
                 margin: auto;
-                padding-top: 30px;
             }
 
             #bubble-chart > svg, #line-chart > svg, #bar-chart > svg {
@@ -211,7 +210,26 @@
             .chart-text {
                 font-size: 11.5px;
             }
-            
+
+            /* Stat Section */
+            #kaileys-stats {
+                margin-bottom: 30px;
+                padding-top: 0px;
+            }
+
+            #bubble-chart, #bar-chart {
+                grid-column: span 2; /* Each chart spans two columns, taking 50% of the container */
+            }
+
+            #tree {
+                grid-row: 3 / span 1; /* Tree spans one row, taking 100% of the container */
+                grid-column: span 2; /* Tree spans two columns */
+            }
+
+            .grid-div-long {
+                grid-column: span 2;
+            }
+                    
             /* Bubble Chart Component */
             .bubble {
                 font-family: sans-serif;
@@ -351,9 +369,17 @@
         </div>
         <div id="kaileys-stats">
             <h2>Stats</h2>
-            <div id="bubble-chart" class="container"></div>
-            <div id="bar-chart" class="container"></div>
-            <div id="tree" class="container"></div>   
+            <div class="grid"> 
+                <div class="grid-div">
+                    <div id="bubble-chart" class="container"></div>
+                </div>
+                <div class="grid-div">
+                    <div id="bar-chart" class="container"></div>
+                </div>
+                <div class="grid-div-long">
+                    <div id="tree" class="container"></div>   
+                </div>
+            </div>
         </div>
 
         <!-- D3 and Vanilla JS -->
