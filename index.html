@@ -54,6 +54,8 @@
             h2 {
                 font-family: sans-serif;
                 font-weight: bold;
+                font-size: 40px;
+                color: var(--component-background-color);
             }
 
             /* Navbar CSS */
@@ -218,6 +220,7 @@
 
             /* Bar Chart Component */
             #bar-chart { 
+                margin-left: 5px;
             }
             
             /* margin-left: 5px; */
@@ -244,7 +247,7 @@
                 margin-bottom: 30px;
             }
 
-            .grid, #bubble-chart, #bar-chart {
+            .grid {
                 display: grid;
                 width: 100%;
                 gap: 1rem;
@@ -253,7 +256,7 @@
             }
 
             @media (max-width: 60em) {
-                .grid, #bubble-chart, #bar-chart {
+                .grid {
                     gap: 3rem;
                 }
             }
@@ -309,12 +312,12 @@
         <!-- HTML Elements -->
         <div id="navbar" class="initial-nav">
             <a href="#" class="active">Home</a>
+            <a href="#sample-projects">Sample Projects</a>
             <a href="#kaileys-stats">My Stats</a>
             <div class="dropdown">
-                <a href="#sample-projects">Sample Projects</a>
+                <a href="#sample-projects">Contact Info</a>
                 <div class="dropdown-content">
-                    <a href="d3_project/index.html" target="_blank">D3 Data Analytics Project</a>
-                    <a href="https://link.springer.com/chapter/10.1007/978-3-030-36687-2_68" target="_blank">Complex Networks Publication</a>
+                    <a href="https://www.linkedin.com/in/kailey-cozart/" target="_blank">LinkedIn</a>
                 </div>
             </div>
         </div>
@@ -346,12 +349,11 @@
                 </div>
             </div>
         </div>
-        <h2>Projects</h2>
         <div id="kaileys-stats">
+            <h2>Stats</h2>
             <div id="bubble-chart" class="container"></div>
             <div id="bar-chart" class="container"></div>
             <div id="tree" class="container"></div>   
-            <div id="table" class="container"></div>   
         </div>
 
         <!-- D3 and Vanilla JS -->
