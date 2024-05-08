@@ -25,5 +25,6 @@
     { "id": "Intro Cryptography", "parentId": "Math Reasoning", "value": 400 },
     { "id": "Masters", "parentId": "Undergrad", "value": 500 },
     { "id": "Assembler", "parentId": "Computer Science II (SKIPPED)", "value": 200 },
-    { "id": "Data and Visual Analytics", "parentId": "Masters", "value": 600 }
+    { "id": "Data and Visual Analytics", "parentId": "Masters", "value": 600 },
+    { "id": "Machine Learning", "parentId": "Masters", "value": 700 }
 ]
