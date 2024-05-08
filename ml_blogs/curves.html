@@ -1,0 +1,123 @@
+<!-- Written by: Kailey Cozart -->
+<!-- References and Sources Listed at Document End: Denoted by [n]-->
+
+<!-- Run Instructions:
+    1) In command prompt either: 
+    Python 3: python -m http.server 8000
+    Python 2: python -m SimpleHTTPServer 8000
+    2) In browser: http://localhost:8000/
+    3) Navigate to location of index.html
+-->
+
+<!-- Limitations:
+    1) Only tested in Chrome
+    2) Not designed for devices smaller than 1100px
+-->
+
+<!DOCTYPE html>
+    <meta content="utf-8" http-equiv="encoding">
+
+    <head>
+        <title>Kailey's Portfolio</title>
+
+        <!-- D3 JS Library -->
+        <script type="text/javascript" src="../d3.min.js"></script>
+        <script type="text/javascript" src="../plot.min.js"></script>
+        
+        <!-- CSS -->    
+        <link rel="stylesheet" type="text/css" href="../styles.css">
+    </head>
+
+    <body>
+        <!-- HTML Elements -->
+        <div id="navbar" class="initial-nav">
+            <a href="../index.html">Home</a>
+            <a href="../index.html#sample-projects">Sample Projects</a>
+            <a href="../index.html#kaileys-stats">My Stats</a>
+            <div class="dropdown">
+                <a href="../index.html">Contact Info</a>
+                <div class="dropdown-content">
+                    <a href="https://www.linkedin.com/in/kailey-cozart/" target="_blank">LinkedIn</a>
+                </div>
+            </div>
+        </div>
+        <div class="heroDiv">
+            <h3 class="fancyTextSmall">Supervised</h1>
+            <h1 class="fancyText">Machine Learning</h1>
+        </div>
+        <div id="sample-projects">
+            <h2>Using Validation Curves and Learning Curves for Hyperparameter Selection</h2>
+            <h3 class="blog-subheader">Validation Curves</h3>
+            <p class="blog-text">One of the challenges of supervised learning and machine learning in general is choosing
+                the optimal hyperparameter values for a given algorithm. While grid searches can be useful
+                in finding appropriate hyperparameter values, they are computationally expensive and do not
+                isolate the effects of individual hyperparameters. Therefore, validation curves can be used
+                to evaluate the performance of a model on certain values for an individual hyperparameter.
+                Validation curves take the performance metric on the y-axis and the hyperparameter on the x-axis. 
+                It is important to note that other hyperparameters should be kept the same and both training
+                and cross-validation sets should be plotted. The assumption is that the cross-validation set
+                will indicate how these hyperparameter values will perform on the test set.
+            </p>
+            <p class="blog-text">Using the <a class="text-a" href="https://archive.ics.uci.edu/ml/datasets/mushroom" target="blank">UCI Mushroom Dataset</a>
+                with added noise, 
+                as well as scikit-learn's DecisionTreeClassifier, we can compare the accuracy of the training
+                and cross-validation sets for different max-depth values. In scikit-learn's implementation, 
+                the default max-depth is None. In the plot below, we can see that, while the accuracy of the 
+                training score increases for all values checked, the cross-validation score rises before beginning 
+                to decrease after hitting a max-depth of 7. This indicates that larger max-depth values begin 
+                to cause overfitting, as the training score improves but the validation score does not. Decreasing 
+                max depth reduces overfit because the trees no longer grow to learn the training set perfectly, 
+                allowing for better generalization.
+            </p>
+            <img class="blog-photos" src="../images/ml_blogs/Mushroom_DT_VC_MaxDepth.png">
+            <p class="blog-text">In order to further combat overfitting, a validation curve for min samples
+                split can be evaluated to determine the ideal value for that hyperparameter. Increasing min
+                samples split means that fewer splits will occur because more samples will be needed to split.
+                Therefore, increasing min samples split will also reduce overfit.
+            </p>
+            <h3 class="blog-subheader">Bias and Variance</h3>
+            <img class="blog-photos" src="../images/ml_blogs/Bias_v_Variance.png">
+            <p class="blog-text">An important concept in the supervised learning is the trade-off betweeen 
+                bias and variance. Bias is the amount of error that exists in representing the underlying data.
+                Variance is the ability of the model to generalize to unseen data. The goal is to find a model
+                that minimizes both bias and variance in order to facilitate a high scoring model. This concept
+                is important when analyzing learning curves.
+            </p>
+            <h3 class="blog-subheader">Learning Curves</h3>
+            <p class="blog-text">Below, the original learning curve for the DecisionTreeClassifier on the Mushroom
+                dataset is shown. The training set has been learned perfectly, while the validation set has poor 
+                accuracy. This indicates that the model is overfit to the training data and not generalizing well.
+            </p>
+            <img class="blog-photos" src="../images/ml_blogs/Mushroom_DT_ILC_Cropped.png">
+            <p class="blog-text">As discussed in the validation curve section, decreasing the max depth from none
+                to 7 and increasing the min samples split results in a more shallow tree with less splits, which
+                helps to prevent overfitting. The resulting final learning curve shows that the training set is 
+                no longer learned perfectly, allowing for better generalization. Additionally, the final model showed a noticeable improvement in accuracy over 
+                the default model, from 79.14% to 84.31%. Note that because the error is still relatively high for
+                both the training and validation sets, this model probably has high bias. Specifically,
+                the last plot had high variance, and this plot has high bias. We can address high bias by choosing a 
+                more complicated model. In this case, a decision tree is probably too simple, so a more complicated 
+                method like a neural network or boosted decision tree might help.
+            </p>
+            <img class="blog-photos" src="../images/ml_blogs/Mushroom_DT_LC_Cropped.png">
+            <p class="blog-text">It is important to note that a model that appears less overfit will not always
+                result in better performance, but tuning hyperparameters based on validation curves usually
+                improves model performance over the baseline.
+            </p>
+            <h3 class="blog-subheader">Learning Curves for Categorical Hyperparameters</h3>
+            <p class="blog-text">Categorical hyperparameters, such as kernels for SVMs or solvers for neural networks 
+                can be compared via their learning curves, as shown in the figure below. Looking for the highest
+                performing validation set curve would be a reasonable approach. For example, the green and purple
+                curves represent training sets, but the brown and red curves represent validation sets. Therefore, 
+                the poly kernal or rbf kernal would probably be best in this scenario.
+            </p>
+            <img class="blog-photos" src="../images/ml_blogs/Mushroom_SVM_VC_Kernels.png">
+            <h3 class="blog-subheader">Author</h3>
+            <p class="blog-text">Written by Kailey Cozart in May, 2024.
+            </p>
+    </body>
+</html>
+
+<!-- Sources:
+    [n-1] Some additional help from AI tools via Google searches and OpenAI queries. -- For all sections.
+-->
