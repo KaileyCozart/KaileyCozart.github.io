@@ -46,13 +46,88 @@
             <h1 class="fancyText">Machine Learning</h1>
         </div>
         <div id="sample-projects">
-            <h2>This Article is In Progress</h2>
-            <h3 class="blog-subheader">Section</h3>
-            <p class="blog-text">Insert paragraph here.
+            <h2>Cluster Number Selection and Distance Metrics</h2>
+
+            <h3 class="blog-subheader">K-means: Distance Metrics and Selecting Number of Clusters</h3>
+            
+            <p class="blog-text">K-means initializes k number of clusters and then randomly
+                selects points to be initial cluster centroids. Points are assigned to the nearest 
+                cluster based on a given distance metric. Then, the centroids are updated and the 
+                process continues until completion. 
             </p>
-            <img class="blog-photos" src="../images/ml_blogs/Mushroom_DT_VC_MaxDepth.png">
+
+            <p class="blog-text">The default distance metric for k-means
+                clustering is Euclidean distance. That being said, the
+                algorithm can be changed to accommodate different
+                feature types. For example, the kmodes package, which
+                uses Hamming distance to reduce dissimilarity, can be
+                used for categorical features [1]. Additionally, datasets
+                with combinations of continuous and categorical features
+                can use k-prototypes, which uses a combination of the
+                two distance metrics [2]. If a dataset only has
+                continuous features, k-means with
+                Euclidean distance is appropriate.
+            </p>
+
+            <p class="blog-text">For cluster selection, there are a few ways the number of clusters, k, 
+                can be chosen. The first is an inertia elbow plot. In this plot, the elbow point is chosen
+                as the number of clusters. For example, in the plot below, a value of 2 or 3 might be chosen.
+            </p>
+            <img class="blog-photos" src="../images/ml_blogs/W_P1_KM_Elbow_Old.png">\
+            <p class="blog-text">A common issue with the inertia elbow plot is difficulty in finding a 
+                clear elbow plot. In cases where an inertia elbow plot is ineffective we can also consult
+                silhouette score. Below is an example from
+                the <a class="text-a" href="https://archive.ics.uci.edu/dataset/186/wine+quality" target="blank">UCI Wine Dataset</a>,
+                where the ideal amount of clusters is 2 based on the silhouette score.
+            </p>
+            <img class="blog-photos" src="../images/ml_blogs/W_P1_KM_Sil.png">
+            
+            <p class="blog-text">Using a value of 2 for k based on silhouette score, k-means clustering 
+                can be applied to the Wine dataset. Below, the resulting clustering is visualized using a
+                pairplot of 3 important features.
+            </p>
+            <img class="blog-photos" src="../images/ml_blogs/W_P0_PP_RW.png">
+            <p class="blog-text">Interestingly, the clustering looks very similar to the separation of
+                red and white wines in the dataset. Note that the separation of red and white wines were
+                not used as features for clustering, so this could be an indication that 
+                k-means is picking up on
+                this distinction. In fact, when the ARI score is calculated
+                between the labels of red and white wines and the KM
+                clustering output, the score is 0.9422, indiciating that the
+                k-means clustering and the ground truth clustering of
+                red and white wines is extremely similar, signifying that
+                the algorithm has found underlying structure in the data.
+                In this case, ARI score has been used because it is a
+                value between 0 and 1, making it easy to understand
+                the relative performance of this clustering algorithm at
+                separating red and white wines, but there are other similarity metrics available.
+            </p>
+            <img class="blog-photos" src="../images/ml_blogs/W_P1_KM_PP.png">
+
+            <h3 class="blog-subheader">EM: Distance Metrics and Selecting Number of Clusters</h3>
+
+            <p class="blog-text">EM alternates between expectation and maximization with 
+                the goal of maximizing the likelihood function with the expected values calculated
+                during the expectation step. EM is a probabilistic model using Gaussian distributions 
+                for data fitting that does not use distance metrics
+                in the same way that k-means does. Instead of assigning
+                samples to the nearest cluster using distance metrics,
+                EM calculates the probability of a sample being in each
+                cluster. In the implementation used here, Mahalanobis
+                distance was used to estimate these probabilities. This
+                distance metric is a popular choice because it can take
+                covariance in the data into account, find ellipsoidal
+                clusters, and is computationally efficient.
+            </p>
+            
+            <h3 class="blog-subheader">References</h3>
+            <p class="blog-text">[1] Vinayedula. (2022). "K-Mode Clustering in Python." Geeks for Geeks. 
+                https://www.geeksforgeeks.org/k-mode-clustering-in-python/.<br />
+                [2] Library Reference. K-prototypes. https://kprototypes.readthedocs.io/en/latest/index.html.
+            </p>
+
             <h3 class="blog-subheader">Author</h3>
-            <p class="blog-text">Written by Kailey Cozart in .
+            <p class="blog-text">Written by Kailey Cozart in May, 2024.
             </p>
     </body>
 </html>
