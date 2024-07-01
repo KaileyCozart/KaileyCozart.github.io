@@ -48,6 +48,11 @@
         <div id="sample-projects">
             <h2>Cluster Number Selection and Distance Metrics</h2>
 
+            <p class="blog-text">The following post goes over cluster number selection and
+                distance metrics for two popular algorithms: 
+                K-means and Expectation-maximization (EM). 
+            </p>
+
             <h3 class="blog-subheader">K-means: Distance Metrics and Selecting Number of Clusters</h3>
             
             <p class="blog-text">K-means initializes k number of clusters and then randomly
@@ -108,7 +113,9 @@
 
             <p class="blog-text">EM alternates between expectation and maximization with 
                 the goal of maximizing the likelihood function with the expected values calculated
-                during the expectation step. EM is a probabilistic model using Gaussian distributions 
+                during the expectation step. EM, 
+                or specifically a Gaussian Mixture Model (GMM), 
+                is a probabilistic model using Gaussian distributions 
                 for data fitting that does not use distance metrics
                 in the same way that k-means does. Instead of assigning
                 samples to the nearest cluster using distance metrics,
@@ -119,11 +126,31 @@
                 covariance in the data into account, find ellipsoidal
                 clusters, and is computationally efficient.
             </p>
+
+            <p class="blog-text">To select the number of clusters when using EM, there are 
+                three potential options. The first is to use silhouette score, the second is 
+                to use Bayesian Information Criterion (BIC) score, 
+                and the third is to use Akaike Information Criterion (AIC) score. 
+                BIC balances fit and
+                complexity by penalizing models with more parameters
+                to reduce overfitting. AIC also balances fit and complex-
+                ity by penalizing models in a way that is less severe
+                than BIC. Larger datasets might benefit from BIC since
+                the BIC equation considers the number of samples in the
+                dataset [3]. 
+                Below is an example of EM applied to a balanced subset of the 
+                <a class="text-a" href="https://archive.ics.uci.edu/dataset/31/covertype" target="blank">UCI Covertype Dataset</a>
+                with PCA applied.
+                In this case, the number of clusters chosen was 10 because both
+                BIC and AIC suggested that 10 clusters would be best.
+            </p>
+            <img class="blog-photos" src="../images/ml_blogs/Covertype_PCA_EM.png">
             
             <h3 class="blog-subheader">References</h3>
             <p class="blog-text">[1] Vinayedula. (2022). "K-Mode Clustering in Python." Geeks for Geeks. 
                 https://www.geeksforgeeks.org/k-mode-clustering-in-python/.<br />
-                [2] Library Reference. K-prototypes. https://kprototypes.readthedocs.io/en/latest/index.html.
+                [2] Library Reference. K-prototypes. https://kprototypes.readthedocs.io/en/latest/index.html.<br />
+                [3] Brownlee, Jason. (2020). "Probabilistic Model Selection with AIC, BIC, and MDL." https://machinelearningmastery.com/probabilistic-model-selection-measures/.
             </p>
 
             <h3 class="blog-subheader">Author</h3>

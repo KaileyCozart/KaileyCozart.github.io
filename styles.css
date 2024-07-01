@@ -37,7 +37,7 @@ a.text-a {
 }
 
 a.text-a:hover {
-    font-weight: bold;
+    text-decoration: underline;
 }
 
 /* Navbar CSS */
