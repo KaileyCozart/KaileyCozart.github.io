@@ -1,6 +1,6 @@
-name,value
-Hosting Technician,12
-Machine Learning Research Assistant,3
-Web Design Intern,1.5
-Computer Lab Assistant,3.6
-iGEM Coding Instructor,3.75
+name,value,hours,months
+Hosting Technician,11.5,2080,12
+Undergraduate Machine Learning Research Assistant,5.75,520,3
+Graduate Machine Learning Research Assistant,3,135,4
+Web Design Intern,3.5,195,3
+Computer Lab Assistant,4.75,360,12
