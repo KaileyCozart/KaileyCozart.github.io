@@ -93,7 +93,7 @@
                 <div class="grid-div">
                     <div class="card"><img class="card-photos" src="images/card-photo-7.jpg">
                       <div class="card-content">
-                        <h1 class="card-header-text">A Review of Recommendation Systems</h1>
+                        <h1 class="card-header-text">A Review on Recommendation Systems: Context-aware to Social-based</h1>
                         <p class="card-paragraph-text">This paper was written during my participation in the AMALTHEA REU program, funded by the NSF and hosted by FIT. It was submitted within one year of the initial research assistantship.</p>
                         <a href="https://arxiv.org/abs/1811.11866" target="_blank"><button class="card-buttons">See Paper <span>&rarr;</span></button></a>
                       </div>
@@ -102,7 +102,7 @@
                 <div class="grid-div">
                     <div class="card"><img class="card-photos" src="images/card-photo-2.jpg">
                       <div class="card-content">
-                        <h1 class="card-header-text">Complex Networks Publication on Short Text Tagging</h1>
+                        <h1 class="card-header-text">Short Text Tagging Using Nested Stochastic Block Model: A Yelp Case Study</h1>
                         <p class="card-paragraph-text">This publication was the result of my participation in the AMALTHEA REU program, funded by the NSF and hosted by FIT. It was published the year after the initial research assistantship.</p>
                         <a href="https://link.springer.com/chapter/10.1007/978-3-030-36687-2_68" target="_blank"><button class="card-buttons">See Paper <span>&rarr;</span></button></a>
                       </div>
@@ -222,9 +222,18 @@
                     height: 300,
                     marks: [
                         Plot.tree(root.descendants(), {
-                        path: (node) => node.ancestors().reverse().map(({ data: { id } }) => id).join("|"),
-                        delimiter: "|",
-                        stroke: "var(--tree-line-color)",
+                            path: (node) => node.ancestors().reverse().map(({ data: { id } }) => id).join("|"),
+                            delimiter: "|",
+                            stroke: (node) => { 
+                                if (node.data.data.value < 500) {
+                                    return "var(--tree-line-color-undergrad)"
+                                }
+                                else if (node.data.id === "Masters" && node.parent?.data.id === "Undergrad") {
+                                    return "var(--tree-line-color-masters)"
+                                } else {
+                                    return "var(--tree-line-color-masters)"
+                                }
+                            },
                             fill: (node) => { // Set fill based on level
                                 if(node !== undefined) {
                                     if (node.data.data.value == 0) {
@@ -245,7 +254,7 @@
                                         return "var(--tree-600-color)"
                                     } else if (node.data.data.value == 800) {
                                         return "var(--tree-600-color)"
-                                    }
+                                    } 
                                 }
                                 return "var(--lighter-color)" 
                             }
@@ -268,8 +277,8 @@
                 bubbleChartSvg.append("text")
                     .text("Work Experience Weighted by Hours Worked")
                     .attr("class", "title")
-                    .attr("x", width / 2 - 350)
-                    .attr("y", 30)
+                    .attr("x", width / 2 - 375)
+                    .attr("y", 40)
 
                 // [2] Create Simulation
                 var simulation = d3.forceSimulation(bubbleChartData)
