@@ -1,0 +1,141 @@
+<!-- Written by: Kailey Cozart -->
+<!-- References and Sources Listed at Document End: Denoted by [n]-->
+
+<!-- Run Instructions:
+    1) In command prompt either: 
+    Python 3: python -m http.server 8000
+    Python 2: python -m SimpleHTTPServer 8000
+    2) In browser: http://localhost:8000/
+    3) Navigate to location of index.html
+-->
+
+<!-- Limitations:
+    1) Only tested in Chrome
+    2) Not designed for devices smaller than 1100px
+-->
+
+<!DOCTYPE html>
+    <meta content="utf-8" http-equiv="encoding">
+
+    <head>
+        <title>Kailey's Portfolio</title>
+
+        <!-- D3 JS Library -->
+        <script type="text/javascript" src="../d3.min.js"></script>
+        <script type="text/javascript" src="../plot.min.js"></script>
+        
+        <!-- CSS -->    
+        <link rel="stylesheet" type="text/css" href="../styles.css">
+    </head>
+
+    <body>
+        <!-- HTML Elements -->
+        <div id="navbar" class="initial-nav">
+            <a href="../index.html">Home</a>
+            <a href="../index.html#sample-projects">Sample Projects</a>
+            <a href="../index.html#kaileys-stats">My Stats</a>
+            <div class="dropdown">
+                <a href="../index.html">Contact Info</a>
+                <div class="dropdown-content">
+                    <a href="https://www.linkedin.com/in/kailey-cozart/" target="_blank">LinkedIn</a>
+                </div>
+            </div>
+        </div>
+        <div class="heroDiv">
+            <h3 class="fancyTextSmall">Unsupervised</h1>
+            <h1 class="fancyText">Machine Learning</h1>
+        </div>
+        <div id="sample-projects">
+            <h2>The Fundamentals of Dimensionality Reduction</h2>
+
+            <p class="blog-text">This post explores dimensionality reduction. In particular,
+                Principal Component Analysis (PCA), 
+                Independent Component Analysis (ICA), 
+                Random Projection (RP), and 
+                Locally Linear Embedding (LLE). 
+                The corresponding Scikit-learn implementations are the following: 
+                PCA, FastICA, GaussianRandomProjection, and LocallyLinearEmbedding [1].
+            </p>
+
+            <h3 class="blog-subheader">The Importance of Dimensionality Reduction Algorithms</h3>
+            <p class="blog-text">
+                When training a supervised machine learning model, it is important to 
+                understand that the number of features can be exponentially related to the
+                number of samples needed to converge. This means that reducing the number
+                of features through feature selection, feature engineering, and
+                dimensionality reduction becomes very important, especially when the number
+                of samples available in a dataset are limited.
+            </p>
+
+            <h3 class="blog-subheader">Common Dimensionality Reduction Algorithms</h3>
+            <p class="blog-text">
+                The goal of PCA is to find new basis vectors that best explain variance
+                within a given dataset. Specifically, the new basis vectors are orthogonal, 
+                or uncorrelated, and they are chosen so that they maximize the variance in 
+                the dataset. In contrast, ICA attempts to find statistically independent components, and 
+                RP uses a random matrix. The advantage of something like RP is that it is much faster.
+                Finally, manifold learning methods like Locally Linear Embedding (LLE) 
+                attempt to find low-dimensional structures and can be effective at finding
+                non-linear relationships between variables.
+            </p>
+
+            <h3 class="blog-subheader">Determining the Ideal Number of Components</h3>
+            
+            <img class="blog-photos" src="../images/ml_blogs/P2_PCA_ScreeA.png">
+
+            <p class="blog-text">
+                For PCA, an explained variance ratio plot vased on eigenvalues can be effective at 
+                choosing the ideal number of components. While the appropriate threshold may vary,
+                in the example below from a balanced subset of the
+                <a class="text-a" href="https://archive.ics.uci.edu/dataset/31/covertype" target="blank">UCI Covertype Dataset</a>,
+                the decided threshold was 90% explained variance. Using this threshold,
+                it was determined that 5 components would be best. Additionally, the elbow
+                point of an eigenvalue scree plot can be used as well to determine the number
+                of components. It is important to note that if you have the same number of components
+                as features, then the explained variance will be 100%. Additionally, it is also important
+                to note that 100% explained variance is not perferred, since overfitting needs to be considered.
+            </p>
+
+            <img class="blog-photos" src="../images/ml_blogs/P2_ICA_Kurtosis.png">
+            
+            <p class="blog-text">
+                For ICA, a kurtosis plot can be used. For example, based on kurtosis plot 
+                elbows, a value of 5 was
+                chosen for the same covertype dataset mentioned above
+                because the kurtosis values for component numbers smaller 
+                than the dimension of the original dataset
+                level off at this value. 
+                Using Pearson’s definition, a normal distribution has
+                a kurtosis of 3. For the covertype dataset, 2 of the
+                components have a kurtosis of over 4, meaning that
+                these components are fairly non-Gaussian with longer
+                tails and higher peaks. Therefore, the distributions in this
+                dataset, particularly the first 2, have high kurtosis.
+            </p>
+            
+            <img class="blog-photos" src="../images/ml_blogs/C_P2_RCA_RE_NS.png">
+            
+            <p class="blog-text">
+                For RP and manifold learning, reconstruction error can be used.
+                For the covertype dataset, the reconstruction error
+                shown above indicates that 6 components is
+                probably best. This is because the reconstruction error
+                is lowest while still having less dimensions than the
+                original dataset. Note that this plot shows the number of
+                components on the x-axis, so as the number of components 
+                goes up, the reconstruction error goes down.
+            </p>
+        
+            <h3 class="blog-subheader">References</h3>
+            <p class="blog-text">[1] Library Reference. Scikit-learn. https://scikit-learn.org/stable/<br />
+            </p>
+
+            <h3 class="blog-subheader">Author</h3>
+            <p class="blog-text">Written by Kailey Cozart in September, 2024.
+            </p>
+    </body>
+</html>
+
+<!-- Sources:
+    [n-1] Some additional help from AI tools via Google searches and OpenAI queries. -- For all sections.
+-->
