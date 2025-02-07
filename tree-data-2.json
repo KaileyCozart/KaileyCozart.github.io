@@ -28,8 +28,9 @@
     { "id": "Data and Visual Analytics", "parentId": "Masters", "value": 600 },
     { "id": "Machine Learning", "parentId": "Masters", "value": 700 },
     { "id": "Special Problems (Research)", "parentId": "Machine Learning", "value": 800 },
-    { "id": "Master's Project (Research)", "parentId": "Special Problems (Research)", "value": 600 },
+    { "id": "Master's Project (Research) x2", "parentId": "Special Problems (Research)", "value": 600 },
     { "id": "Research Seminar", "parentId": "Masters", "value": 800 },
     { "id": "LLM Seminar", "parentId": "Masters", "value": 800 },
-    { "id": "CS Educators Seminar", "parentId": "Masters", "value": 800 }
+    { "id": "CS Educators Seminar", "parentId": "Masters", "value": 800 },
+    { "id": "Federated Learning and ML Ops Seminar", "parentId": "Masters", "value": 800 }
 ]
