@@ -32,5 +32,6 @@
     { "id": "Research Seminar", "parentId": "Masters", "value": 800 },
     { "id": "LLM Seminar", "parentId": "Masters", "value": 800 },
     { "id": "CS Educators Seminar", "parentId": "Masters", "value": 800 },
-    { "id": "Federated Learning and ML Ops Seminar", "parentId": "Masters", "value": 800 }
+    { "id": "Federated Learning and ML Ops Seminar", "parentId": "Masters", "value": 800 },
+    { "id": "Introduction to Research", "parentId": "Research Seminar", "value": 800 }
 ]
