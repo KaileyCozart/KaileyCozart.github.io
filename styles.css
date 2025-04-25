@@ -25,9 +25,10 @@ body, svg {
 }
 
 h2 {
-    font-family: sans-serif;
-    font-weight: bold;
+    font-family: Helvetica, Arial, sans-serif;
+    font-weight: normal;
     font-size: 40px;
+    letter-spacing: 1px;
     color: var(--component-background-color);
 }
 
